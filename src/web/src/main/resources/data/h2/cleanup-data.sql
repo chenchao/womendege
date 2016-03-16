@@ -1,0 +1,15 @@
+delete from kn_role_resource;
+delete from kn_user_role;
+delete from kn_resource;
+delete from kn_role;
+delete from kn_user;
+delete from kn_employee_organization;
+delete from kn_employee_position;
+delete from kn_employee_team;
+delete from kn_organization;
+delete from kn_position;
+delete from kn_employee_team;
+delete from kn_team;
+delete from kn_employee;
+delete from kn_position_branched_passage;
+delete from kn_application_info;

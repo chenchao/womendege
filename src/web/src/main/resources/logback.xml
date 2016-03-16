@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <!-- 控制台输出日志,没有保存到文件中,只是格式化了显示 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{mm:ss} %-5level %logger{36} >>> %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--每天生成一个日志文件，保存30天的日志文件。-->
+    <appender name="DayFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>kndLogs/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <!--<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>-->
+            <pattern>%d{HH:mm:ss} %-4relative [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--指定logger name为包名或类全名 指定级别 additivity设置是否传递到root logger -->
+    <logger name="slf4j" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="DayFile"/>
+    </logger>
+    <!--slf4j2包下的类在ERROR级别时候传递到root logger中-->
+    <logger name="slf4j2" level="ERROR" />
+    <logger name="jdbc.sqltiming" level="ERROR" />
+    <!--将com.kingnode包下的日志记录到 kndFile文件中-->
+    <logger name="com.kingnode" level="INFO" additivity="false" >
+        <appender-ref ref="DayFile"/>
+    </logger>
+    <!--根logger控制-->
+    <root level="ERROR">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
+    <!--<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+        <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+</appender>
+
+<appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/tmp/logs/oa.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <fileNamePattern>/tmp/logs/oa.%d{yyyy-MM-dd}.log</fileNamePattern>
+    </rollingPolicy>
+    <encoder>
+        <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+</appender>
+
+&lt;!&ndash; project default level &ndash;&gt;
+<logger name="com.kingnode" level="INFO" />
+
+&lt;!&ndash;log4jdbc &ndash;&gt;
+<logger name="jdbc.sqltiming" level="INFO" />
+
+<root level="INFO">
+    <appender-ref ref="console" />
+</root>
+</configuration>-->
