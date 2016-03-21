@@ -23,5 +23,6 @@
         <pattern>/authority/*</pattern>
         <pattern>/app-score/*</pattern>
         <pattern>/product/*</pattern>
+        <pattern>/order/*</pattern>
     </decorator>
 </decorators>
