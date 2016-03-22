@@ -19,6 +19,7 @@ import com.kingnode.gou.dao.OrderHeadDao;
 import com.kingnode.gou.dao.OrderPayDao;
 import com.kingnode.gou.dao.OrderReturnDetailDao;
 import com.kingnode.gou.dao.ShoppCartDao;
+import com.kingnode.gou.dao.ShoppCommentDao;
 import com.kingnode.gou.dto.OrderProductDTO;
 import com.kingnode.gou.dto.OrderSubmitDTO;
 import com.kingnode.gou.dto.ShoppCartDTO;
@@ -27,6 +28,7 @@ import com.kingnode.gou.entity.OrderHead;
 import com.kingnode.gou.entity.OrderPay;
 import com.kingnode.gou.entity.OrderReturnDetail;
 import com.kingnode.gou.entity.ShoppCart;
+import com.kingnode.gou.entity.ShoppComment;
 import com.kingnode.xsimple.api.common.DataTable;
 import com.kingnode.xsimple.util.Users;
 import org.joda.time.DateTime;
@@ -54,6 +56,8 @@ public class OrderService{
     @Autowired
     private ShoppCartDao shoppCartDao;
     @Autowired
+    private ShoppCommentDao shoppCommentDao;
+    @Autowired
     private OrderPayDao orderPayDao;
     @Autowired
     private OrderReturnDetailDao orderReturnDetailDao;
@@ -71,6 +75,70 @@ public class OrderService{
         Map<String,SearchFilter> filters=SearchFilter.parse(searchParams);
         Specification<ShoppCart> spec=DynamicSpecifications.bySearchFilter(filters.values());
         return shoppCartDao.findAll(spec,pageRequest);
+    }
+
+    /**
+     * 获取一个星期的过期时间
+     * @return
+     */
+    private long getOverdueTime(){
+        return 7*24*60*60*1000;
+    }
+
+    /**
+     * 是否在正常的退货时间内
+     * @param orderTime
+     * @return
+     */
+    public boolean isInNormalTime(long orderTime){
+        long nowTime = new Date().getTime();
+        return (nowTime-orderTime)>getOverdueTime();
+    }
+
+    /**
+     * 保存购物车
+     * @param productId
+     * @param count
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public int SaveShoppcat(Long productId,int count){
+        ShoppCart cart = new ShoppCart();
+        cart.setProductId(productId);
+        cart.setQuatity(count);
+        cart.setUserId(Users.id());
+        cart.setStatus(ShoppCart.Status.activy);
+        shoppCartDao.save(cart);
+        return 1;
+    }
+
+    /**
+     *
+     * @param orderDetailNo
+     * @param reson
+     * @param remark
+     * @param img1
+     * @param img2
+     * @param img3
+     * @return 1申请退款成功 ， 2已过申请退款时间
+     */
+    @Transactional(readOnly = true)
+    public int OrderReturn(String orderDetailNo,String reson,String remark,String img1,String img2,String img3){
+        //先判断no是否在合适的状态
+        OrderDetail detail = orderDetailDao.findByOrderNo(orderDetailNo);
+        if(detail != null && isInNormalTime(detail.getCreateTime())){
+            //往退款表中插入记录
+            OrderReturnDetail returnDetail = new OrderReturnDetail();
+            returnDetail.setMoney(detail.getPrice().multiply(new BigDecimal(detail.getQuatity()+"")));
+            returnDetail.setImg1(img1);
+            returnDetail.setImg2(img2);
+            returnDetail.setImg3(img3);
+            returnDetail.setOrderReturnNo("R"+detail.getOrderNo());
+            returnDetail.setOrderDetail(detail);
+            returnDetail.setStatus(OrderReturnDetail.ReturnStatus.daishenhe);
+            orderReturnDetailDao.save(returnDetail);
+        }
+        return 2;
     }
 
     /**
@@ -102,6 +170,52 @@ public class OrderService{
     }
 
     /**
+     * 获取购物车列表
+     * @param searchParams
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    public Page<ShoppCart> PageShoppcat(final Map<String,Object> searchParams,int pageNumber,int pageSize){
+        PageRequest pageRequest=new PageRequest(pageNumber,pageSize,new Sort(Sort.Direction.DESC,"id"));
+        Specification<ShoppCart> spec=new Specification<ShoppCart>(){
+            @Override public Predicate toPredicate(Root<ShoppCart> root,CriteriaQuery<?> cq,CriteriaBuilder cb){
+                List<Predicate> predicates=Lists.newArrayList();
+                if(searchParams.get("LIKE_userId")!=null && !"".equals(searchParams.get("LIKE_userId")) ){
+                    predicates.add(cb.equal(root.<Long>get("userId"),Long.valueOf(searchParams.get("LIKE_userId").toString())));
+                }
+                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        };
+        return shoppCartDao.findAll(spec,pageRequest);
+    }
+
+
+    /**
+     * 获取评论列表
+     * @param searchParams
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
+    public Page<ShoppComment> PageComment(final Map<String,Object> searchParams,int pageNumber,int pageSize){
+        PageRequest pageRequest=new PageRequest(pageNumber,pageSize,new Sort(Sort.Direction.DESC,"id"));
+        Specification<ShoppComment> spec=new Specification<ShoppComment>(){
+            @Override public Predicate toPredicate(Root<ShoppComment> root,CriteriaQuery<?> cq,CriteriaBuilder cb){
+                List<Predicate> predicates=Lists.newArrayList();
+                if(searchParams.get("LIKE_userId")!=null && !"".equals(searchParams.get("LIKE_userId")) &&  Long.valueOf(searchParams.get("LIKE_userId").toString())>0){
+                    predicates.add(cb.equal(root.<Long>get("userId"),Long.valueOf(searchParams.get("LIKE_userId").toString())));
+                }
+                if(searchParams.get("LIKE_productId")!=null && !"".equals(searchParams.get("LIKE_productId")) &&  Long.valueOf(searchParams.get("LIKE_productId").toString())>0){
+                    predicates.add(cb.equal(root.<Long>get("productId"),Long.valueOf(searchParams.get("LIKE_productId").toString())));
+                }
+                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        };
+        return shoppCommentDao.findAll(spec,pageRequest);
+    }
+
+    /**
      * 获取退货列表
      * @param searchParams
      * @param pageNumber
@@ -119,7 +233,7 @@ public class OrderService{
                 if(searchParams.get("LIKE_status")!=null && !"".equals(searchParams.get("LIKE_status")) ){
                     predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("status"),OrderHead.OrderStatus.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
                 }
-                if(searchParams.get("LIKE_userId")!=null && !"".equals(searchParams.get("LIKE_userId")) ){
+                if(searchParams.get("LIKE_userId")!=null && !"".equals(searchParams.get("LIKE_userId")) &&  Long.valueOf(searchParams.get("LIKE_userId").toString())>0 ){
                     predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("userId"),Long.valueOf(searchParams.get("LIKE_userId").toString())));
                 }
                 if(searchParams.get("title")!=null && !"".equals(searchParams.get("title")) ){
@@ -152,7 +266,7 @@ public class OrderService{
                 if(searchParams.get("LIKE_status")!=null && !"".equals(searchParams.get("LIKE_status")) ){
                     predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("status"),OrderHead.OrderStatus.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
                 }
-                if(searchParams.get("LIKE_userId")!=null && !"".equals(searchParams.get("LIKE_userId")) ){
+                if(searchParams.get("LIKE_userId")!=null && !"".equals(searchParams.get("LIKE_userId")) &&  Long.valueOf(searchParams.get("LIKE_userId").toString())>0 ){
                     predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("userId"),Long.valueOf(searchParams.get("LIKE_userId").toString())));
                 }
                 if(searchParams.get("title")!=null && !"".equals(searchParams.get("title")) ){
@@ -230,8 +344,8 @@ public class OrderService{
                 BigDecimal price = BigDecimal.ZERO;
                 for(;;){
                     //查询这个订单号是否已经存在
-                    List<OrderDetail>  details = orderDetailDao.findByOrderNo(orderDetailNo);
-                    if(details != null && details.size() > 0){
+                    OrderDetail  details = orderDetailDao.findByOrderNo(orderDetailNo);
+                    if(details != null){
                         orderDetailNo = getOrderDetailNo(Users.id()+"");
                     }else{
                         break;
@@ -328,6 +442,19 @@ public class OrderService{
      */
     public OrderHead ReadOrderHead(long id){
         return orderHeadDao.findOne(id);
+    }
+
+    /**
+     * 审核
+     * @param id
+     * @param status
+     */
+    @Transactional(readOnly = false)
+    public void approveOrderReturn(Long id,String status){
+        OrderReturnDetail detail = orderReturnDetailDao.findOne(id);
+        detail.setStatus(OrderReturnDetail.ReturnStatus.valueOf(status));
+        detail.setApproveTime(new Date().getTime());
+        orderReturnDetailDao.save(detail);
     }
 
     /**
@@ -465,5 +592,11 @@ public class OrderService{
     }
     public void setOrderReturnDetailDao(OrderReturnDetailDao orderReturnDetailDao){
         this.orderReturnDetailDao=orderReturnDetailDao;
+    }
+    public ShoppCommentDao getShoppCommentDao(){
+        return shoppCommentDao;
+    }
+    public void setShoppCommentDao(ShoppCommentDao shoppCommentDao){
+        this.shoppCommentDao=shoppCommentDao;
     }
 }

@@ -42,6 +42,11 @@ public class OrderController{
         return "order/orderHeadList";
     }
 
+    @RequestMapping(value = "return/list",method=RequestMethod.GET)
+    public String returnInit(Model model){
+        return "order/orderReturnList";
+    }
+
     /**
      * 新闻分类管理首页
      *
@@ -85,6 +90,20 @@ public class OrderController{
     public String detail( @PathVariable("id") Long id,Model model){
         model.addAttribute("orderHead",orderService.ReadOrderHead(id));
         return "order/orderHeadForm";
+    }
+
+    /**
+     * 退货申请
+     * @param id
+     * @param status
+     * @param redirectAttributes
+     * @return
+     */
+    @RequestMapping(value="return/approve", method=RequestMethod.POST)
+    public String approveOrderReturn( @RequestParam("id") Long id,@RequestParam("status") String status,RedirectAttributes redirectAttributes){
+        orderService.approveOrderReturn(id,status);
+        redirectAttributes.addFlashAttribute("message","更新订单成功");
+        return "redirect:/order";
     }
 
     /**

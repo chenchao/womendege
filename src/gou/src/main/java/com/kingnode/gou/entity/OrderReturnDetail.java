@@ -17,7 +17,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Table(name="order_return_detail")
 public class OrderReturnDetail extends AuditEntity{
-    private Long productId;//产品id
     private OrderDetail orderDetail;//对应订单详情表
     private String orderReturnNo;//退单编号 在订单号前加上R
     private ReturnStatus status;//退货状态 退货申请，待退款，退款完成,拒绝
@@ -25,6 +24,9 @@ public class OrderReturnDetail extends AuditEntity{
     private String reson;//退货原因
     private BigDecimal money;//退货金额
     private Long approveTime;//审批时间
+    private String img1;//图片地址
+    private String img2;//图片地址
+    private String img3;//图片地址
 
     public ReturnStatus getStatus(){
         return status;
@@ -44,12 +46,6 @@ public class OrderReturnDetail extends AuditEntity{
     public void setMoney(BigDecimal money){
         this.money=money;
     }
-    public Long getProductId(){
-        return productId;
-    }
-    public void setProductId(Long productId){
-        this.productId=productId;
-    }
     public String getOrderReturnNo(){
         return orderReturnNo;
     }
@@ -61,6 +57,24 @@ public class OrderReturnDetail extends AuditEntity{
     }
     public void setApproveTime(Long approveTime){
         this.approveTime=approveTime;
+    }
+    public String getImg2(){
+        return img2;
+    }
+    public void setImg2(String img2){
+        this.img2=img2;
+    }
+    public String getImg3(){
+        return img3;
+    }
+    public void setImg3(String img3){
+        this.img3=img3;
+    }
+    public String getImg1(){
+        return img1;
+    }
+    public void setImg1(String img1){
+        this.img1=img1;
     }
     @ManyToOne
     @JoinColumn(nullable=false, name="order_detail_id") @Cache(usage=CacheConcurrencyStrategy.READ_WRITE)
