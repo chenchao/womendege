@@ -7,4 +7,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 @SuppressWarnings("ALL")
 public interface OrderPayDao extends PagingAndSortingRepository<OrderPay,Long>, JpaSpecificationExecutor<OrderPay>{
+    OrderPay findByOrderNoAndTradeNo(String orderNo,String trandNo);
 }

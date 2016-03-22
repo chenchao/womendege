@@ -2,6 +2,7 @@ package com.kingnode.gou.service;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -14,6 +15,8 @@ import com.google.common.collect.Lists;
 import com.kingnode.diva.mapper.BeanMapper;
 import com.kingnode.diva.persistence.DynamicSpecifications;
 import com.kingnode.diva.persistence.SearchFilter;
+import com.kingnode.gou.alipay.config.AlipayConfig;
+import com.kingnode.gou.alipay.util.AlipaySubmit;
 import com.kingnode.gou.dao.OrderDetailDao;
 import com.kingnode.gou.dao.OrderHeadDao;
 import com.kingnode.gou.dao.OrderPayDao;
@@ -23,12 +26,15 @@ import com.kingnode.gou.dao.ShoppCommentDao;
 import com.kingnode.gou.dto.OrderProductDTO;
 import com.kingnode.gou.dto.OrderSubmitDTO;
 import com.kingnode.gou.dto.ShoppCartDTO;
+import com.kingnode.gou.dto.ShoppCommentDTO;
+import com.kingnode.gou.dto.ShoppCommentImgDTO;
 import com.kingnode.gou.entity.OrderDetail;
 import com.kingnode.gou.entity.OrderHead;
 import com.kingnode.gou.entity.OrderPay;
 import com.kingnode.gou.entity.OrderReturnDetail;
 import com.kingnode.gou.entity.ShoppCart;
 import com.kingnode.gou.entity.ShoppComment;
+import com.kingnode.gou.entity.ShoppCommentImg;
 import com.kingnode.xsimple.api.common.DataTable;
 import com.kingnode.xsimple.util.Users;
 import org.joda.time.DateTime;
@@ -113,6 +119,34 @@ public class OrderService{
     }
 
     /**
+     * 保存评论
+     * @param dto
+     * @return
+     */
+    public int SaveShoppComment(ShoppCommentDTO dto){
+        ShoppComment comment = new ShoppComment();
+        comment.setUserId(Users.id());
+        comment.setProductId(dto.getProductId());
+        comment.setContent(dto.getContent());
+        comment.setLabel(dto.getLabel());
+        comment.setScore(dto.getScore());
+
+
+        List<ShoppCommentImg> commentImgs = Lists.newArrayList();
+        if(dto.getCommentImgs() != null && dto.getCommentImgs().size()>0){
+            for(ShoppCommentImgDTO imgDTO : dto.getCommentImgs()){
+                ShoppCommentImg img = new ShoppCommentImg();
+                img.setImgPath(imgDTO.getPath());
+                commentImgs.add(img);
+            }
+        }
+
+        comment.setCommentImgs(commentImgs);
+        shoppCommentDao.save(comment);
+        return 1;
+    }
+
+    /**
      *
      * @param orderDetailNo
      * @param reson
@@ -141,33 +175,33 @@ public class OrderService{
         return 2;
     }
 
-    /**
-     * 支付处理方法
-     * @param orderNo
-     * @param payStatus
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public int OrderPay(String orderNo,OrderPay.PayStatus payStatus,OrderPay.SourceType type,BigDecimal money,String remark){
-        //修改订单头表状体
-        OrderHead head = orderHeadDao.findByOrderHeadNo(orderNo);
-
-        //增加支付记录，如果支付成功，则修改订单状态
-        OrderPay pay = new OrderPay();
-        pay.setUserId(Users.id());
-        pay.setMoney(money);
-        pay.setOrderHeadId(head.getId());
-        pay.setRemark(remark);
-        pay.setStatus(payStatus);
-        pay.setSourceType(type);
-        orderPayDao.save(pay);
-
-        if(payStatus ==OrderPay.PayStatus.success){
-            head.setStatus(OrderHead.OrderStatus.daifahuo);
-            orderHeadDao.save(head);
-        }
-        return 1;
-    }
+//    /**
+//     * 支付处理方法
+//     * @param orderNo
+//     * @param payStatus
+//     * @return
+//     */
+//    @Transactional(readOnly = true)
+//    public int OrderPay(String orderNo,OrderPay.PayStatus payStatus,OrderPay.SourceType type,BigDecimal money,String remark){
+//        //修改订单头表状体
+//        OrderHead head = orderHeadDao.findByOrderHeadNo(orderNo);
+//
+//        //增加支付记录，如果支付成功，则修改订单状态
+//        OrderPay pay = new OrderPay();
+//        pay.setUserId(Users.id());
+//        pay.setMoney(money);
+//        pay.setOrderHeadId(head.getId());
+//        pay.setRemark(remark);
+//        pay.setStatus(payStatus);
+//        pay.setSourceType(type);
+//        orderPayDao.save(pay);
+//
+//        if(payStatus ==OrderPay.PayStatus.success){
+//            head.setStatus(OrderHead.OrderStatus.daifahuo);
+//            orderHeadDao.save(head);
+//        }
+//        return 1;
+//    }
 
     /**
      * 获取购物车列表
@@ -559,6 +593,88 @@ public class OrderService{
             rd = r.nextInt(last);
         }while(rd<start);
         return rd;
+    }
+
+    /**
+     *
+     * @param orderHeadNo
+     * @return
+     * @throws Exception
+     */
+    @Transactional(readOnly = false)
+    public String sendZhifubao(String orderHeadNo,OrderPay.SourceType sourceType) throws Exception{
+        OrderHead head = orderHeadDao.findByOrderHeadNo(orderHeadNo);
+        if(head == null) throw new Exception("E001");
+        String orderName = orderHeadNo;
+        String money = head.getMoney().floatValue()+"";
+
+        //把请求参数打包成数组
+        Map<String, String> sParaTemp = new HashMap<String, String>();
+        sParaTemp.put("service", AlipayConfig.service);
+        sParaTemp.put("partner", AlipayConfig.partner);
+        sParaTemp.put("seller_id", AlipayConfig.seller_id);
+        sParaTemp.put("_input_charset", AlipayConfig.input_charset);
+        sParaTemp.put("payment_type", AlipayConfig.payment_type);
+        sParaTemp.put("notify_url", AlipayConfig.notify_url);
+        sParaTemp.put("return_url", AlipayConfig.return_url);
+        sParaTemp.put("anti_phishing_key", AlipaySubmit.query_timestamp());
+//        sParaTemp.put("anti_phishing_key", AlipayConfig.anti_phishing_key);
+        sParaTemp.put("exter_invoke_ip", AlipayConfig.exter_invoke_ip);
+        sParaTemp.put("out_trade_no", orderHeadNo);
+        sParaTemp.put("subject", orderName);
+        sParaTemp.put("total_fee", money);
+        sParaTemp.put("body", "");
+
+        //这个时候开始存库
+        OrderPay orderPay = new OrderPay();
+        orderPay.setUserId(Users.id());
+
+        orderPay.setMoney(head.getMoney());
+        orderPay.setOrderNo(orderHeadNo);
+        orderPay.setSourceType(sourceType);
+        orderPay.setSubject(orderName);
+        orderPay.setStatus("start");
+
+        String sHtmlText = AlipaySubmit.buildRequest(sParaTemp,"get","确认");
+
+        orderPay.setPayBeforeStr(sHtmlText);
+        orderPayDao.save(orderPay);
+
+        return sHtmlText;
+    }
+
+    @Transactional(readOnly = false)
+    public String returnSynZhifubao(String orderNo,String trandNo,String trandStatus,String money,Map<String,String> params){
+        OrderPay orderPay = orderPayDao.findByOrderNoAndTradeNo(orderNo,trandNo);
+        if("start".equals(orderPay.getStatus())){
+            //说明没有处理过
+            orderPay.setStatus("return");
+            orderPay.setBeforeMoney(new BigDecimal(money));
+            String str = "";//TODO:这里吧返回参数map转换成字符串
+            orderPay.setPayAfterStr(str);
+            orderPay.setBeforeMoney(new BigDecimal(money));
+            orderPay.setPayStatus(trandStatus);
+            orderPayDao.save(orderPay);
+            return "1";
+        }
+        return null;
+    }
+
+    @Transactional(readOnly = false)
+    public String returnDynZhifubao(String orderNo,String trandNo,String trandStatus,String money,Map<String,String> params){
+        OrderPay orderPay = orderPayDao.findByOrderNoAndTradeNo(orderNo,trandNo);
+        if("return".equals(orderPay.getStatus())){
+            //说明没有处理过
+            orderPay.setStatus("return");
+            orderPay.setBeforeMoney(new BigDecimal(money));
+            String str = "";//TODO:这里吧返回参数map转换成字符串
+            orderPay.setPayAfterStr(str);
+            orderPay.setAfterDaynMoney(new BigDecimal(money));
+            orderPay.setPayStatus(trandStatus);
+            orderPayDao.save(orderPay);
+            return "1";
+        }
+        return null;
     }
 
 

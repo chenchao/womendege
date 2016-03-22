@@ -1,16 +1,21 @@
 package com.kingnode.gou.dto;
 import java.util.List;
-
-import com.kingnode.gou.entity.ShoppCommentImg;
 /**
  * @author 58120775@qq.com (chenchao)
  */
 public class ShoppCommentDTO{
+    private Long productId;//商品id
     private String content;//心得
     private String score;//评分
     private String label;//标签
+    private List<ShoppCommentImgDTO> commentImgs;
 
-    private List<ShoppCommentImg> commentImgs;
+    public Long getProductId(){
+        return productId;
+    }
+    public void setProductId(Long productId){
+        this.productId=productId;
+    }
     public String getContent(){
         return content;
     }
@@ -29,10 +34,10 @@ public class ShoppCommentDTO{
     public void setLabel(String label){
         this.label=label;
     }
-    public List<ShoppCommentImg> getCommentImgs(){
+    public List<ShoppCommentImgDTO> getCommentImgs(){
         return commentImgs;
     }
-    public void setCommentImgs(List<ShoppCommentImg> commentImgs){
+    public void setCommentImgs(List<ShoppCommentImgDTO> commentImgs){
         this.commentImgs=commentImgs;
     }
 }
