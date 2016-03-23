@@ -1,12 +1,7 @@
 package com.kingnode.gou.entity;
 
-import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.kingnode.xsimple.entity.AuditEntity;
@@ -23,15 +18,13 @@ public class ShoppComment extends AuditEntity{
     private String content;//心得
     private String score;//评分
     private String label;//标签
-    @OneToMany(fetch=FetchType.LAZY,cascade={CascadeType.MERGE,CascadeType.REMOVE})
-    @JoinColumn(name = "teacher_id")
-    private List<ShoppCommentImg> commentImgs;//评论图片
-    public List<ShoppCommentImg> getCommentImgs(){
-        return commentImgs;
-    }
-    public void setCommentImgs(List<ShoppCommentImg> commentImgs){
-        this.commentImgs=commentImgs;
-    }
+   // private List<ShoppCommentImg> commentImgs;//评论图片
+//    public List<ShoppCommentImg> getCommentImgs(){
+//        return commentImgs;
+//    }
+//    public void setCommentImgs(List<ShoppCommentImg> commentImgs){
+//        this.commentImgs=commentImgs;
+//    }
     public Long getProductId(){
         return productId;
     }

@@ -276,7 +276,7 @@ public class OrderRestController{
     }
 
     //增加商品评论
-    @RequestMapping(value="/order/add/shoppcat", method={RequestMethod.POST})
+    @RequestMapping(value="/order/add/shoppcomment", method={RequestMethod.POST})
     public DetailDTO addShoppcomment(@RequestBody ShoppCommentDTO dto){
         if(Users.id() == null || Users.id()==0l){
             logger.error("接口：/order/submit，请先登录");

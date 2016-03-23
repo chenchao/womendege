@@ -141,7 +141,7 @@ public class OrderService{
             }
         }
 
-        comment.setCommentImgs(commentImgs);
+        //comment.setCommentImgs(commentImgs);
         shoppCommentDao.save(comment);
         return 1;
     }

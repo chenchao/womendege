@@ -24,5 +24,6 @@
         <pattern>/app-score/*</pattern>
         <pattern>/product/*</pattern>
         <pattern>/order/*</pattern>
+        <pattern>/order</pattern>
     </decorator>
 </decorators>
