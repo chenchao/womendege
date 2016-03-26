@@ -14,8 +14,7 @@ import com.kingnode.xsimple.entity.AuditEntity;
 @Table(name="shopp_cart")
 public class ShoppCart extends AuditEntity{
     private Long userId;//用户id
-    @Enumerated(EnumType.STRING)
-    private Status status;//状态，有效，无效
+    private ActiveType status;//状态，有效，无效
     private Long productId;//产品id
     private Integer quatity;//数量
 
@@ -25,10 +24,11 @@ public class ShoppCart extends AuditEntity{
     public void setUserId(Long userId){
         this.userId=userId;
     }
-    public Status getStatus(){
+    @Enumerated(EnumType.STRING)
+    public ActiveType getStatus(){
         return status;
     }
-    public void setStatus(Status status){
+    public void setStatus(ActiveType status){
         this.status=status;
     }
     public Integer getQuatity(){
@@ -42,8 +42,7 @@ public class ShoppCart extends AuditEntity{
     }
     public void setProductId(Long productId){
         this.productId=productId;
+
     }
-    public enum Status{
-        activy,invalid
-    }
+
 }

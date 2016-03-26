@@ -36,6 +36,7 @@ import com.kingnode.gou.entity.ShoppCart;
 import com.kingnode.gou.entity.ShoppComment;
 import com.kingnode.gou.entity.ShoppCommentImg;
 import com.kingnode.xsimple.api.common.DataTable;
+import com.kingnode.xsimple.entity.IdEntity;
 import com.kingnode.xsimple.util.Users;
 import org.joda.time.DateTime;
 import org.slf4j.LoggerFactory;
@@ -113,7 +114,7 @@ public class OrderService{
         cart.setProductId(productId);
         cart.setQuatity(count);
         cart.setUserId(Users.id());
-        cart.setStatus(ShoppCart.Status.activy);
+        cart.setStatus(IdEntity.ActiveType.ENABLE);
         shoppCartDao.save(cart);
         return 1;
     }
@@ -258,24 +259,26 @@ public class OrderService{
      */
     public Page<OrderReturnDetail> PageOrderReturn(final Map<String,Object> searchParams,int pageNumber,int pageSize){
         PageRequest pageRequest=new PageRequest(pageNumber,pageSize,new Sort(Sort.Direction.DESC,"id"));
-        Specification<OrderReturnDetail> spec=new Specification<OrderReturnDetail>(){
-            @Override public Predicate toPredicate(Root<OrderReturnDetail> root,CriteriaQuery<?> cq,CriteriaBuilder cb){
-                List<Predicate> predicates=Lists.newArrayList();
-                if(searchParams.get("LIKE_orderHeadId")!=null && !"".equals(searchParams.get("LIKE_orderHeadId")) ){
-                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("id"),Long.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
-                }
-                if(searchParams.get("LIKE_status")!=null && !"".equals(searchParams.get("LIKE_status")) ){
-                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("status"),OrderHead.OrderStatus.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
-                }
-                if(searchParams.get("LIKE_userId")!=null && !"".equals(searchParams.get("LIKE_userId")) &&  Long.valueOf(searchParams.get("LIKE_userId").toString())>0 ){
-                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("userId"),Long.valueOf(searchParams.get("LIKE_userId").toString())));
-                }
-                if(searchParams.get("title")!=null && !"".equals(searchParams.get("title")) ){
-                    predicates.add(cb.like(root.<String>get("title"),searchParams.get("title").toString()));
-                }
-                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-            }
-        };
+        Map<String,SearchFilter> filters=SearchFilter.parse(searchParams);
+        Specification<OrderReturnDetail> spec=DynamicSpecifications.bySearchFilter(filters.values());
+//        Specification<OrderReturnDetail> spec=new Specification<OrderReturnDetail>(){
+//            @Override public Predicate toPredicate(Root<OrderReturnDetail> root,CriteriaQuery<?> cq,CriteriaBuilder cb){
+//                List<Predicate> predicates=Lists.newArrayList();
+//                if(searchParams.get("LIKE_orderHeadId")!=null && !"".equals(searchParams.get("LIKE_orderHeadId")) ){
+//                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("id"),Long.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
+//                }
+//                if(searchParams.get("LIKE_status")!=null && !"".equals(searchParams.get("LIKE_status")) ){
+//                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("status"),OrderHead.OrderStatus.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
+//                }
+//                if(searchParams.get("LIKE_userId")!=null && !"".equals(searchParams.get("LIKE_userId")) &&  Long.valueOf(searchParams.get("LIKE_userId").toString())>0 ){
+//                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("userId"),Long.valueOf(searchParams.get("LIKE_userId").toString())));
+//                }
+//                if(searchParams.get("title")!=null && !"".equals(searchParams.get("title")) ){
+//                    predicates.add(cb.like(root.<String>get("title"),searchParams.get("title").toString()));
+//                }
+//                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+//            }
+//        };
         return orderReturnDetailDao.findAll(spec,pageRequest);
     }
 
@@ -412,7 +415,7 @@ public class OrderService{
      */
     public int createShoppCart(ShoppCartDTO dto){
         //首先根据商品id，来查询用户是否已经购物车里有此产品，如有的话就是产品加1，如果没有就新增
-        List<ShoppCart> shoppCarts = shoppCartDao.findByUserIdAndProductIdAndStatus(dto.getUserId(),dto.getProductId(),ShoppCart.Status.activy);
+        List<ShoppCart> shoppCarts = shoppCartDao.findByUserIdAndProductIdAndStatus(dto.getUserId(),dto.getProductId(),IdEntity.ActiveType.ENABLE);
         if(shoppCarts != null && shoppCarts.size()>0){
             ShoppCart cart = shoppCarts.get(0);
             cart.setQuatity(cart.getQuatity()+1);

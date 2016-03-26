@@ -44,6 +44,15 @@ INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon
 INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES (73,'ENABLE','import-org-user',2,'组织用户导入','70.73.',3,70,'MENU','/import/org-user','icon-user-following');
 --INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES (72,'ENABLE','import-oa-user',2,'oa用户更新','70.72.',3,70,'MENU','/import/oa-user','icon-user-following');
 
+--订单管理
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(80,'ENABLE','order',1,'订单管理','80.',8,0,'MENU','/order','glyphicon glyphicon-arrow-down');
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES (81,'ENABLE','order',2,'订单列表','80.81.',1,80,'MENU','/order',
+'icon-user-follow');
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(82,'ENABLE','return-order',2,'退单列表','80.72.',3,80,'MENU','/order/return/list','icon-user-following');
+
+
 ---插入基本用户
 INSERT INTO kn_user (id,login_name,name,email,password,salt,status,create_time,user_online) VALUES (1,'admin','管理员','admin@kingnode.com','691b14d79bf0fa2215f155235df5e670b64394cc','7efbd59d9741d34f','ENABLE',1406532246618,0);
 
@@ -88,6 +97,9 @@ INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,62);
 INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,70);
 INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,71);
 INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,73);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,80);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,81);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,82);
 --INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,72);
 
 --插入序列值
