@@ -161,9 +161,9 @@ public class OrderRestController{
             int count=0;
             for(ShoppCart detail : orderDetails){
                 OrderReturnListDTO dto=BeanMapper.map(detail,OrderReturnListDTO.class);
-                dto.setImgPath("");
+                dto.setImgPath("123456");
                 dto.setProductId(detail.getProductId());
-                dto.setProductName("");
+                dto.setProductName("我是测试");
                 dto.setPrice(BigDecimal.ZERO);
                 dtos.add(dto);
             }
