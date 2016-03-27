@@ -1,10 +1,12 @@
 package com.kingnode.xsimple.util.dete;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import org.joda.time.DateTime;
 /**
  * 类说明：日期的相关处理
  * @author cici
@@ -113,6 +115,52 @@ public class DateUtil{
             }
         }
         return resultDate;
+    }
+
+    public static final String format="yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * 时间转换为Long类型
+     *
+     * @param strDate 时间字符串格式
+     * @param format  时间格式
+     *
+     * @return
+     */
+    public Long parseDateStr(String strDate,String format){
+        Date sDate=parseDate(strDate,format);
+        //        SimpleDateFormat dft = new SimpleDateFormat(format);
+        Calendar date=Calendar.getInstance();
+        date.setTime(sDate);
+        return date.getTimeInMillis();
+    }
+    /**
+     * 相差时间
+     * @param meiosis
+     * @param minuend
+     * @return
+     */
+    public static int differDay(Long meiosis,Long minuend){
+        if(meiosis>minuend){
+            Long mss=meiosis-minuend;
+            long days = mss / (1000 * 60 * 60 * 24);
+            return (int)Math.ceil((double)days);
+        }
+        return 0;
+    }
+
+    public static String getDate(Long date){
+        return date!=null?new DateTime(date).toString(format):null;
+    }
+    public static Long getDate(String date){
+        try{
+            SimpleDateFormat sdf =   new SimpleDateFormat(format);
+            Date resultDate = sdf.parse(date);
+            return resultDate.getTime();
+        }catch(ParseException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 

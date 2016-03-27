@@ -25,5 +25,9 @@
         <pattern>/product/*</pattern>
         <pattern>/order/*</pattern>
         <pattern>/order</pattern>
+        <pattern>/activity</pattern>
+        <pattern>/customer</pattern>
+        <pattern>/activity/*</pattern>
+        <pattern>/customer/*</pattern>
     </decorator>
 </decorators>

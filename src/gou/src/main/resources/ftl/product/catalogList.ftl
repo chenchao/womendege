@@ -33,7 +33,7 @@
                 <div class="caption"><i class="fa fa-cogs"></i>商品目录组列表</div>
                 <div class="actions">
                     <div class="btn-group">
-                        <a href="${rc.contextPath}/product/catalog/create" class="btn green">
+                        <a href="${rc.contextPath}/activity/catalog/create" class="btn green">
                             <i class="fa fa-plus"></i>
                             <span class="hidden-480">新增商品目录组</span>
                         </a>
