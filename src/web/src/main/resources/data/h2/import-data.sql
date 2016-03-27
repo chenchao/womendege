@@ -75,7 +75,9 @@ INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon
 INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
 (92,'ENABLE','product-class',2,'商品类别','90.92.',2,90,'MENU','/product/class','icon-user-following');
 INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
-(93,'ENABLE','product-detail',2,'商品列表','90.93.',1,90,'MENU','/product/detail','icon-user-following');
+(93,'ENABLE','product-catalog',2,'商品目录组','90.93.',3,90,'MENU','/product/catalog','icon-user-following');
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(94,'ENABLE','product-detail',2,'商品列表','90.94.',4,90,'MENU','/product/detail','icon-user-following');
 --活动管理
 INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
 (100,'ENABLE','activity',1,'活动管理','100.',10,0,'MENU','/activity','glyphicon glyphicon-arrow-down');
@@ -137,6 +139,11 @@ INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,90);
 INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,91);
 INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,92);
 INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,93);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,94);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,100);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,101);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,110);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,111);
 --INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,72);
 
 --插入序列值

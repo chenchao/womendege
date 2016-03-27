@@ -42,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
     public DataTable<ProductClass> pageProductClass(DataTable<ProductClass> dt,final Map<String,Object> searchParams){
         Sort.Direction d="asc".equals(dt.getsSortDir_0())?Sort.Direction.ASC:Sort.Direction.DESC;//升降序
         int index=Integer.parseInt(dt.getiSortCol_0());
-        String[] column=new String[]{"classCode","className","classKeyword","classDesc"};
+        String[] column=new String[]{"classCode","className","classSort","classKeyword","classDesc"};
         PageRequest pageRequest=new PageRequest(dt.pageNo(),dt.getiDisplayLength(),new Sort(d,column[index]));
         Page<ProductClass> page=classDao.findAll(new Specification<ProductClass>(){
             @Override public Predicate toPredicate(Root<ProductClass> root,CriteriaQuery<?> query,CriteriaBuilder cb){

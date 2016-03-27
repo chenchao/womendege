@@ -136,14 +136,16 @@ ${message}
                 <div class="caption">
                     <i class="fa fa-gift"></i>商品详情信息
                 </div>
-                <div class="actions">
-                    <div class="btn-group">
-                        <a href="${rc.contextPath}/product/detail/create-sub/${d.id}" class="btn green">
-                            <i class="fa fa-plus"></i>
-                            <span class="hidden-480">新增商品详情</span>
-                        </a>
+                <#if addDetailFlag==1>
+                    <div class="actions" id="actions-button">
+                        <div class="btn-group">
+                            <a href="${rc.contextPath}/product/detail/create-sub/${d.id}" class="btn green">
+                                <i class="fa fa-plus"></i>
+                                <span class="hidden-480">新增商品详情</span>
+                            </a>
+                        </div>
                     </div>
-                </div>
+                </#if>
             </div>
             <div class="portlet-body form">
                 <div class="form-horizontal form-bordered">

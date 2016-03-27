@@ -52,8 +52,17 @@
                             <div class="col-md-4">
                                 <input type="text" class="form-control" placeholder="" id="productCode" name="productCode" value="${d.productCode}">
                             </div>
-                            <label class="col-md-2 control-label">商品名称<span class="required">*</span></label>
+                            <label class="col-md-2 control-label">是否子商品<span class="required">*</span></label>
                             <div class="col-md-4">
+                                <select name="ifSub" id="ifSub" class="form-control  form-filter input-sm">
+                                    <option value="1">是</option>
+                                    <option value="0">否</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">商品名称<span class="required">*</span></label>
+                            <div class="col-md-10">
                                 <input type="text" class="form-control" placeholder="" id="productName" name="productName" value="${d.productName}">
                             </div>
                         </div>
@@ -73,7 +82,7 @@
                         </div>
                         <div class="form-group">
                             <label class="col-md-2 control-label">所属分类<span class="required">*</span></label>
-                            <div class="col-md-8">
+                            <div class="col-md-10">
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="productClassName" name="productClassName" placeholder="请选择所属分类" value="${parentName}">
                                     <input type="hidden" class="form-control" id="productClass" name="productClass" value="${d.productClass}">
@@ -83,7 +92,7 @@
                         </div>
                         <div class="form-group">
                             <label class="col-md-2 control-label">商品描述</label>
-                            <div class="col-md-8">
+                            <div class="col-md-10">
                                 <textarea class="form-control" id="productDesc" name="productDesc" rows="3" cols="40">${d.productDesc}</textarea>
                             </div>
                         </div>
