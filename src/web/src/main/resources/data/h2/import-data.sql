@@ -52,6 +52,16 @@ INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon
 INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
 (82,'ENABLE','return-order',2,'退单列表','80.72.',3,80,'MENU','/order/return/list','icon-user-following');
 
+--商品管理
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(90,'ENABLE','product',1,'商品管理','90.',9,0,'MENU','/product','glyphicon glyphicon-arrow-down');
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(91,'ENABLE','product-brand',2,'商品品牌','90.91.',1,90,'MENU','/product/brand','icon-user-following');
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(92,'ENABLE','product-class',2,'商品类别','90.92.',2,90,'MENU','/product/class','icon-user-following');
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(93,'ENABLE','product-detail',2,'商品列表','90.93.',1,90,'MENU','/product/detail','icon-user-following');
+
 
 ---插入基本用户
 INSERT INTO kn_user (id,login_name,name,email,password,salt,status,create_time,user_online) VALUES (1,'admin','管理员','admin@kingnode.com','691b14d79bf0fa2215f155235df5e670b64394cc','7efbd59d9741d34f','ENABLE',1406532246618,0);
@@ -100,6 +110,10 @@ INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,73);
 INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,80);
 INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,81);
 INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,82);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,90);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,91);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,92);
+INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,93);
 --INSERT INTO kn_role_resource (role_id,res_id) VALUES (1,72);
 
 --插入序列值

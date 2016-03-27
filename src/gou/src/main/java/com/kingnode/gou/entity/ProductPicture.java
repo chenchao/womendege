@@ -9,6 +9,7 @@ import javax.persistence.Table;
 @Entity @Table(name="product_picture") public class ProductPicture extends BaseEntity{
     private static final long serialVersionUID=7729773785078498063L;
     private Long productId;//商品id
+    private String productType;//商品类型 1.表示商品，2.表示商品详情
     private String pictureLocation;//图片位置
     private Integer pictureSort;//图片排序
     private String pictureName;//图片名称
@@ -17,6 +18,12 @@ import javax.persistence.Table;
     private Long pictureSize;//图片大小
     public Long getProductId(){
         return productId;
+    }
+    public String getProductType(){
+        return productType;
+    }
+    public void setProductType(String productType){
+        this.productType=productType;
     }
     public void setProductId(Long productId){
         this.productId=productId;

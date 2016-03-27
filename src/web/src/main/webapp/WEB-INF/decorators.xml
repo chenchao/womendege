@@ -25,5 +25,6 @@
         <pattern>/product/*</pattern>
         <pattern>/order/*</pattern>
         <pattern>/order</pattern>
+        <pattern>/product/*</pattern>
     </decorator>
 </decorators>

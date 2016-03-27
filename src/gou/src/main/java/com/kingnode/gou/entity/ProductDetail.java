@@ -1,8 +1,9 @@
 package com.kingnode.gou.entity;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
+import javax.persistence.Transient;
 /**
  * 商品详情(子商品)
  */
@@ -16,6 +17,9 @@ import javax.persistence.Table;
     private Double productPrice;//基础单价
     private Double productStock;//商品库存
     private Integer productShelves;//上架标识
+    private String catalogName;//目录组名称
+    private List<ProductCatalogAttr> subAttrs;//规格集合
+    private List<ProductPicture> pictures;//图片集合
     public Long getProductId(){
         return productId;
     }
@@ -64,5 +68,26 @@ import javax.persistence.Table;
     }
     public void setProductShelves(Integer productShelves){
         this.productShelves=productShelves;
+    }
+    @Transient
+    public List<ProductCatalogAttr> getSubAttrs(){
+        return subAttrs;
+    }
+    public void setSubAttrs(List<ProductCatalogAttr> subAttrs){
+        this.subAttrs=subAttrs;
+    }
+    @Transient
+    public String getCatalogName(){
+        return catalogName;
+    }
+    public void setCatalogName(String catalogName){
+        this.catalogName=catalogName;
+    }
+    @Transient
+    public List<ProductPicture> getPictures(){
+        return pictures;
+    }
+    public void setPictures(List<ProductPicture> pictures){
+        this.pictures=pictures;
     }
 }
