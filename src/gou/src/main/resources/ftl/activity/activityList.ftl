@@ -132,7 +132,7 @@
                 ],
                 "aoColumns":[
                     { "sTitle":"活动编号","mData":"activityCode","mRender":function(data,type,row){
-                        return data;
+                        return '<a href="${rc.contextPath}/activity/update/'+row.id+'">'+data+'</a>';
                     }},
                     {  "sTitle":"活动名称","mData":"name","mRender":function(data,type,row){
                         return data;

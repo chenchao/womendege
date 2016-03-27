@@ -1,14 +1,15 @@
 create or replace view activity_product_view as
 SELECT
-ap.activity_id as activityId,
-ap.product_id as productId,
-p.product_sub_code as productCode,
-p.product_sub_name as productName,
-i.picture_url as productImg,
+ap.activity_id as activity_id,
+ap.product_id as product_id,
+p.product_sub_code as product_code,
+p.product_sub_name as product_name,
+i.picture_url as product_img,
 p.product_price as price,
 p.product_unit as unit,
 a.discount as discount,
-a.activity_type as activityType
+a.activity_code as activity_code,
+a.state as state
 from activity_product ap, activity a,product_detail p,product_picture i
 where ap.activity_id=a.id and ap.product_id=p.id and ap.product_id=i.id and p.product_shelves=1
 
@@ -75,8 +76,16 @@ INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon
 (92,'ENABLE','product-class',2,'商品类别','90.92.',2,90,'MENU','/product/class','icon-user-following');
 INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
 (93,'ENABLE','product-detail',2,'商品列表','90.93.',1,90,'MENU','/product/detail','icon-user-following');
-
-
+--活动管理
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(100,'ENABLE','activity',1,'活动管理','100.',10,0,'MENU','/activity','glyphicon glyphicon-arrow-down');
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(101,'ENABLE','activity-list',2,'活动列表','100.101.',1,100,'MENU','/activity','icon-user-following');
+--会员管理
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(110,'ENABLE','customer',1,'会员管理','110.',11,0,'MENU','/customer','glyphicon glyphicon-arrow-down');
+INSERT INTO kn_resource (id,active,code,depth,name,path,seq,sup_id,type,url,icon) VALUES
+(111,'ENABLE','customer-list',2,'会员列表','110.111.',1,110,'MENU','/customer','icon-user-following');
 ---插入基本用户
 INSERT INTO kn_user (id,login_name,name,email,password,salt,status,create_time,user_online) VALUES (1,'admin','管理员','admin@kingnode.com','691b14d79bf0fa2215f155235df5e670b64394cc','7efbd59d9741d34f','ENABLE',1406532246618,0);
 

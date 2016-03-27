@@ -2,6 +2,8 @@ package com.kingnode.gou.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 /**
@@ -19,6 +21,7 @@ import javax.persistence.Table;
     private String unit;    //单位
     private Double discount;   //折扣
     private String activityCode;
+    private Activity.ActivityState state;
     public ActivityProduct getApId(){
         return apId;
     }
@@ -72,5 +75,12 @@ import javax.persistence.Table;
     }
     public void setDiscount(Double discount){
         this.discount=discount;
+    }
+    @Enumerated(EnumType.STRING)
+    public Activity.ActivityState getState(){
+        return state;
+    }
+    public void setState(Activity.ActivityState state){
+        this.state=state;
     }
 }

@@ -1,16 +1,19 @@
 package com.kingnode.gou.controller;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletRequest;
 
 import com.google.common.base.Strings;
+import com.kingnode.diva.mapper.BeanMapper;
 import com.kingnode.diva.web.Servlets;
 import com.kingnode.gou.entity.Activity;
 import com.kingnode.gou.entity.ActivityPosition;
 import com.kingnode.gou.entity.ActivityProduct;
 import com.kingnode.gou.entity.ActivityProductView;
+import com.kingnode.gou.entity.Collection;
 import com.kingnode.gou.service.ActivityService;
 import com.kingnode.xsimple.Setting;
 import com.kingnode.xsimple.api.common.DataTable;
@@ -66,15 +69,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
         model.addAttribute("activityPositions",activityService.findActivityPositions(id));
         return "activity/activityView";
     }
-    @RequestMapping(value="update/{id}", method=RequestMethod.POST) public String update(@PathVariable("id") Long id,Model model){
+    @RequestMapping(value="update/{id}", method=RequestMethod.GET) public String update(@PathVariable("id") Long id,Model model){
         model.addAttribute("activity",activityService.readActivity(id));
         model.addAttribute("activityPositions",activityService.findActivityPositions(id));
         return "activity/activityForm";
     }
-    @RequestMapping(value="save", method=RequestMethod.POST) public String save(Activity activity,RedirectAttributes redirectAttributes){
-        activityService.saveActivity(activity);
+    @RequestMapping(value="save", method=RequestMethod.POST) public String save(Activity activity,@RequestParam(value="startTimeStr")String startTimeStr,@RequestParam(value="endTimeStr")String endTimeStr,RedirectAttributes redirectAttributes){
+        Activity a=activityService.saveActivity(activity);
         redirectAttributes.addFlashAttribute("message","活动更新成功");
-        return "redirect:/activity";
+        return "redirect:/activity/update/"+a.getId();
     }
     @RequestMapping(value="delete/{id}", method=RequestMethod.POST) public String delete(@PathVariable("id") Long id,RedirectAttributes redirectAttributes){
         activityService.deleteActivity(id);
