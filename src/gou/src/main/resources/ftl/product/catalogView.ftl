@@ -59,6 +59,11 @@
                             <div class="col-md-4">
                                 <input type="text" class="form-control" readonly placeholder="" id="catalogName" name="catalogName" value="${d.catalogName}">
                             </div>
+                            <label class="col-md-2 control-label">目录组名称</label>
+                            <div class="col-md-4">
+                                <input type="hidden" id="catalogType" name="catalogType" value="${d.catalogType}">
+                                <input type="text" class="form-control" readonly placeholder="" id="catalogTypeName" name="catalogTypeName" value="${d.catalogTypeName}">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="col-md-2 control-label">目录组描述</label>

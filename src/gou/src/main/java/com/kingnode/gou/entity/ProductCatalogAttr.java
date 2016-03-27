@@ -1,7 +1,7 @@
 package com.kingnode.gou.entity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
+import javax.persistence.Transient;
 /**
  * 商品目录组属性
  */
@@ -10,6 +10,7 @@ import javax.persistence.Table;
     private Long catalogId;//目录组id
     private String catalogAttrName;//规格属性名称
     private Integer catalogAttrSort;//排序
+    private String catalogAttrVal;//属性值
     public Long getCatalogId(){
         return catalogId;
     }
@@ -27,5 +28,12 @@ import javax.persistence.Table;
     }
     public void setCatalogAttrSort(Integer catalogAttrSort){
         this.catalogAttrSort=catalogAttrSort;
+    }
+    @Transient
+    public String getCatalogAttrVal(){
+        return catalogAttrVal;
+    }
+    public void setCatalogAttrVal(String catalogAttrVal){
+        this.catalogAttrVal=catalogAttrVal;
     }
 }

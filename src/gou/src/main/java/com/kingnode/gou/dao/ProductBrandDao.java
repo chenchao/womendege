@@ -12,4 +12,6 @@ import org.springframework.data.repository.query.Param;
 @SuppressWarnings("ALL") public interface ProductBrandDao extends PagingAndSortingRepository<ProductBrand,Long>, JpaSpecificationExecutor<ProductBrand>{
     @Query("select s from ProductBrand s where s.removeTag=0 and s.brandName=:brandName") List<ProductBrand> findByBrandName(@Param("brandName") String brandName);
     @Query("select s from ProductBrand s where s.removeTag=0 and s.brandCode=:brandCode") List<ProductBrand> findByBrandCode(@Param("brandCode") String brandCode);
+    @Query("select s from ProductBrand s where s.removeTag=0 and s.brandName like:brandName")
+    List<ProductBrand> findLikeBrandCode(@Param("brandName") String brandName);
 }

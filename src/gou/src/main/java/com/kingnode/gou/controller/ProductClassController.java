@@ -38,6 +38,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
         dt=classService.pageProductClass(dt,searchParams);
         return dt;
     }
+    @RequestMapping(value="select",method=RequestMethod.POST) @ResponseBody public DataTable<ProductClass> select(DataTable<ProductClass> dt,ServletRequest request){
+        Map<String,Object> searchParams=Servlets.getParametersStartingWith(request,"search_");
+        dt=classService.pageProductClass(dt,searchParams);
+        //添加上级分类明细
+        if(dt.getAaData()!=null&&dt.getAaData().size()>0){
+            for(ProductClass productClass:dt.getAaData()){
+                productClass.setParentName(classService.createParentName(productClass));
+            }
+        }
+        return dt;
+    }
     /**
      * 进入新增页面
      */

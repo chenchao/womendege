@@ -22,4 +22,5 @@ import org.springframework.transaction.annotation.Transactional;
     @Autowired private ProductDao productDao;
     @Autowired private ProductDetailDao detailDao;
     @Autowired private ProductPictureDao pictureDao;
+
 }

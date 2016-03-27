@@ -16,11 +16,11 @@
                 <i class="fa fa-angle-right"></i>
             </li>
             <li>
-                <a href="${rc.contextPath}/product/catalog">商品目录组</a>
+                <a href="${rc.contextPath}/product/detail">商品</a>
                 <i class="fa fa-angle-right"></i>
             </li>
             <li>
-                <a href="#">商品目录组列表</a>
+                <a href="#">商品列表</a>
                 <i class="fa fa-angle-right"></i>
             </li>
         </ul>
@@ -30,12 +30,12 @@
     <div class="col-md-12">
         <div class="portlet box green-haze">
             <div class="portlet-title">
-                <div class="caption"><i class="fa fa-cogs"></i>商品目录组列表</div>
+                <div class="caption"><i class="fa fa-cogs"></i>商品列表</div>
                 <div class="actions">
                     <div class="btn-group">
-                        <a href="${rc.contextPath}/product/catalog/create" class="btn green">
+                        <a href="${rc.contextPath}/product/detail/create" class="btn green">
                             <i class="fa fa-plus"></i>
-                            <span class="hidden-480">新增商品目录组</span>
+                            <span class="hidden-480">新增商品</span>
                         </a>
                     </div>
                 </div>
@@ -48,12 +48,27 @@
                 </div>
             </#if>
                 <div class="table-container">
-                    <div class="table-actions-wrapper">
-                        <input style="width: 170px!important" type="text" class="form-control table-group-action-input form-control input-inline input-small input-sm" placeholder="请输入目录组名称" id="selectInput">
-                        <button class="btn btn-sm yellow table-group-action-submit"><i class="fa fa-search"></i> 查询</button>
-                    </div>
                     <table class="table table-striped table-bordered table-hover" id="data_table">
                         <thead>
+                        <tr role="row" class="heading">
+                            <th>商品编码</th>
+                            <th>商品名称</th>
+                            <th>商品简称</th>
+                            <th>所属品牌</th>
+                            <th>所属分类</th>
+                            <th>操作</th>
+                        </tr>
+                        <tr role="row" class="filter">
+                            <td><input type="text" class="form-control form-filter input-sm" name="search_LIKE_code"></td>
+                            <td><input type="text" class="form-control form-filter input-sm" name="search_LIKE_name"></td>
+                            <td><input type="text" class="form-control form-filter input-sm" name="search_LIKE_shortName"></td>
+                            <td><input type="text" class="form-control form-filter input-sm" name="search_LIKE_brand"></td>
+                            <td><input type="text" class="form-control form-filter input-sm" name="search_LIKE_class"></td>
+                            <td>
+                                <button class="btn btn-sm yellow filter-submit margin-bottom"><i class="fa fa-search"></i>搜索</button>
+                                <button class="btn btn-sm red filter-cancel"><i class="fa fa-times"></i>重置</button>
+                            </td>
+                        </tr>
                         </thead>
                         <tbody>
                         </tbody>
@@ -86,26 +101,24 @@
                 "aaSorting":[[0,"asc"]],
                 "iDisplayLength":10,
                 "bServerSide":true,
-                "aoColumnDefs":[{"bSortable":false,"aTargets":[2,3,4]}],
-                "sAjaxSource":"${rc.contextPath}/product/catalog",
-                "aoColumns":[{
-                    "sTitle":"目录组名称","mData":"catalogName","mRender":function(data,type,row){
+                "aoColumnDefs":[{"bSortable":false,"aTargets":[5]}],
+                "sAjaxSource":"${rc.contextPath}/product/detail",
+                "aoColumns":[
+                    {"sTitle":"商品编码","mData":"productCode","mRender":function(data,type,row){
                         return '<a href="javascript:goView('+row.id+')">'+data+'</a>';
-                    }
-                },{"sTitle":"目录组类型","mData":"catalogTypeName"},{"sTitle":"目录组描述","mData":"catalogDesc"},{"sTitle":"目录组属性集合","mData":"catalogAttrNames"},{
-                    "sTitle":"操作","mData":"id","mRender":function(data,type,row){
-                        var a='<a class="btn btn-xs red" href="javascript:delData('+row.id+')"><i class="fa fa-trash-o"></i>删除</a>';
-                        var b='<a class="btn btn-xs blue" href="javascript:subView('+row.id+')"><i class="fa fa-edit"></i>编辑目录组属性</a></div>';
-                        return a+b;
+                    }},
+                    {"sTitle":"商品名称","mData":"productName"},
+                    {"sTitle":"商品简称","mData":"productShortName"},
+                    {"sTitle":"所属品牌","mData":"brandName"},
+                    {"sTitle":"所属分类","mData":"fullClassName"},
+                    {"sTitle":"操作","mData":"id","mRender":function(data,type,row){
+                        return '<a class="btn btn-xs red" href="javascript:delData('+row.id+')"><i class="fa fa-trash-o"></i>删除</a>';
                     }
                 }]
             }
         });
-        function subView(id){
-            document.location="${rc.contextPath}/product/catalog/sub-view/"+id;
-        }
         function goView(id){
-            document.location="${rc.contextPath}/product/catalog/view/"+id;
+            document.location="${rc.contextPath}/product/detail/sub-view/"+id;
         }
         function delData(id){
             bootbox.dialog({
@@ -118,7 +131,7 @@
                         label:"确定",className:"green",callback:function(){
                             Metronic.startPageLoading();
                             $.ajax({
-                                url:'${rc.contextPath}/product/catalog/delete/'+id,type:'POST',dataType:"json",traditional:true,success:function(data){
+                                url:'${rc.contextPath}/product/detail/delete/'+id,type:'POST',dataType:"json",traditional:true,success:function(data){
                                     if(data.result=="success"){
                                         grid.getDataTable().fnDraw();
                                     }else{
@@ -131,13 +144,6 @@
                     }
                 }
             });
-        }
-        $('.table-group-action-submit').click(function(){
-            selectAjax($("#selectInput").val());
-        });
-        function selectAjax(value){
-            grid.setAjaxParam("search_LIKE_catalogName",value);
-            grid.getDataTable().fnDraw();
         }
     </script>
 </content>

@@ -72,4 +72,11 @@ import org.springframework.transaction.annotation.Transactional;
         }
         return Lists.newArrayList();
     }
+    public ProductBrand readProductBrandByCode(String brandCode){
+        List<ProductBrand> list=brandDao.findByBrandCode(brandCode);
+        if(list!=null&&list.size()>0){
+            return list.get(0);
+        }
+        return null;
+    }
 }

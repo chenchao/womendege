@@ -65,6 +65,15 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-md-2 control-label">目录组类型<span class="required">*</span></label>
+                            <div class="col-md-4">
+                                <select name="catalogType" class="form-control" id="catalogType">
+                                    <option value="SHOP">商品属性</option>
+                                    <option value="SPEC">商品规格</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-md-2 control-label">目录组描述</label>
                             <div class="col-md-8">
                                 <textarea class="form-control" id="catalogDesc" name="catalogDesc" rows="3" cols="40">${d.catalogDesc}</textarea>
@@ -105,9 +114,18 @@
     <script type="text/javascript" src="${rc.contextPath}/assets/global/common/commonUtil.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
+        <#if action!='create'>
+            var type="${d.catalogType}";
+            $('#catalogType option').each(function(){
+                if($(this).val()==type ){
+                    $(this).attr('selected',true);
+                }
+            });
+        </#if>
         <#if action=='view'>
             $("input").attr("readonly","readonly");
             $("#catalogDesc").attr("readonly","readonly");
+            $("#catalogType").attr("disabled","disabled");
         </#if>
         });
         function saveInfo(){
