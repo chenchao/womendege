@@ -16,7 +16,6 @@ import com.kingnode.xsimple.entity.AuditEntity;
 public class OrderHead extends AuditEntity{
     private Long userId;//用户id
     private String userName;//用户名
-    @Enumerated(EnumType.STRING)
     private OrderStatus status;//订单状态，未付款，代发货，已发货，退货
     private BigDecimal money;//订单总金额
     private Long invoiceId;//收货地址id
@@ -54,6 +53,7 @@ public class OrderHead extends AuditEntity{
     public void setInvoiceId(Long invoiceId){
         this.invoiceId=invoiceId;
     }
+    @Enumerated(EnumType.STRING)
     public OrderStatus getStatus(){
         return status;
     }

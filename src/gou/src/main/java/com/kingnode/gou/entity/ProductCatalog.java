@@ -11,6 +11,8 @@ import javax.persistence.Transient;
     private String catalogName;//目录组名称
     private String catalogDesc;//目录组备注
     private String catalogAttrNames;//目录组属性名称
+    private String catalogType;//目录组类型
+    private String catalogTypeName;//目录组名称
     public String getCatalogName(){
         return catalogName;
     }
@@ -28,5 +30,24 @@ import javax.persistence.Transient;
     }
     public void setCatalogAttrNames(String catalogAttrNames){
         this.catalogAttrNames=catalogAttrNames;
+    }
+    public String getCatalogType(){
+        return catalogType;
+    }
+    public void setCatalogType(String catalogType){
+        this.catalogType=catalogType;
+    }
+    @Transient
+    public String getCatalogTypeName(){
+        if("SHOP".equals(this.catalogType)){
+            return "商品属性";
+        }
+        if("SPEC".equals(this.catalogType)){
+            return "商品规格";
+        }
+        return catalogTypeName;
+    }
+    public void setCatalogTypeName(String catalogTypeName){
+        this.catalogTypeName=catalogTypeName;
     }
 }

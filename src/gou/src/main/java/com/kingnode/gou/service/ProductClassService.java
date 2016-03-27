@@ -52,6 +52,9 @@ import org.springframework.transaction.annotation.Transactional;
                     if(key.contains("EQ_parentClass")&&StringUtils.isNotEmpty(searchParams.get(key).toString())){
                         predicates.add(cb.equal(root.<String>get("parentClass"),searchParams.get(key).toString().trim()));
                     }
+                    if(key.contains("EQ_depth")&&StringUtils.isNotEmpty(searchParams.get(key).toString())){
+                        predicates.add(cb.equal(root.<Integer>get("depth"),Integer.valueOf(searchParams.get(key).toString().trim())));
+                    }
                     if(key.contains("OR_classCode|className")&&StringUtils.isNotEmpty(searchParams.get(key).toString())){
                         predicates.add(cb.or(cb.like(root.<String>get("classCode"),"%"+searchParams.get(key).toString().trim()+"%"),cb.like(root.<String>get("className"),"%"+searchParams.get(key).toString().trim()+"%")));
                     }
@@ -104,5 +107,21 @@ import org.springframework.transaction.annotation.Transactional;
             return classDao.findByClassName(className);
         }
         return Lists.newArrayList();
+    }
+    public String createParentName(ProductClass productClass){
+        if(StringUtils.isBlank(productClass.getPath())){
+            return "";
+        }
+        String[] ids=productClass.getPath().split("\\.");
+        StringBuffer sb=new StringBuffer();
+        for(String id:ids){
+            if(StringUtils.isBlank(id)){
+                continue;
+            }
+            Long temp=Long.valueOf(id);
+            ProductClass parent=readProductClass(temp);
+            sb.append(parent.getClassName()).append(" ").append("-->").append(" ");
+        }
+        return sb.length()>0?sb.toString().substring(0,sb.length()-4):"";
     }
 }

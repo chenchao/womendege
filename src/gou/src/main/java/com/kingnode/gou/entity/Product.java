@@ -2,7 +2,7 @@ package com.kingnode.gou.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
+import javax.persistence.Transient;
 /**
  * 商品
  */
@@ -15,6 +15,8 @@ import javax.persistence.Table;
     private String productCode;//产品编码
     private String productShortName;//商品简称
     private String productDesc;//商品描述
+    private String brandName;//品牌名称
+    private String fullClassName;//分类名称
     public Long getCatalogId(){
         return catalogId;
     }
@@ -58,5 +60,19 @@ import javax.persistence.Table;
     }
     public void setProductDesc(String productDesc){
         this.productDesc=productDesc;
+    }
+    @Transient
+    public String getBrandName(){
+        return brandName;
+    }
+    public void setBrandName(String brandName){
+        this.brandName=brandName;
+    }
+    @Transient
+    public String getFullClassName(){
+        return fullClassName;
+    }
+    public void setFullClassName(String fullClassName){
+        this.fullClassName=fullClassName;
     }
 }

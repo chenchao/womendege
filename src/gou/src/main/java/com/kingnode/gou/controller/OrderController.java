@@ -100,6 +100,7 @@ public class OrderController{
      * @return
      */
     @RequestMapping(value="return/approve", method=RequestMethod.POST)
+    @ResponseBody
     public String approveOrderReturn( @RequestParam("id") Long id,@RequestParam("status") String status,RedirectAttributes redirectAttributes){
         orderService.approveOrderReturn(id,status);
         redirectAttributes.addFlashAttribute("message","更新订单成功");

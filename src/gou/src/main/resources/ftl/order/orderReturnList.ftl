@@ -39,23 +39,28 @@
                     操作成功
                 </div>
 
-                <#--<div id="data_table_search">-->
-                    <#--<label>-->
-                    <#--商品数量：<input type="text" class="form-control form-filter input-sm" name="search_LIKE_counts" value="">-->
-                    <#--</label>-->
-                    <#--<label>-->
-                        <#--交易时间：-->
-                        <#--<div class="input-group date date-picker margin-bottom-5" data-date-format="yyyy-mm-dd">-->
-                            <#--<input type="text" class="form-control form-filter input-sm" readonly name="search_LIKE_startTime" placeholder="From">-->
-                            <#--<span class="input-group-btn"><button class="btn btn-sm default" type="button"><i class="fa fa-calendar"></i></button></span>-->
-                        <#--</div>-->
-                        <#--<div class="input-group date date-picker" data-date-format="yyyy-mm-dd">-->
-                            <#--<input type="text" class="form-control form-filter input-sm" readonly name="search_LIKE_endTime" placeholder="To">-->
-                            <#--<span class="input-group-btn"><button class="btn btn-sm default" type="button"><i class="fa fa-calendar"></i></button></span>-->
-                        <#--</div>-->
-                    <#--</label>-->
-                        <#---->
-                <#--</div>-->
+                <!-- 上传模态窗口 -->
+                <div class="modal fade" id="uploadModal" tabindex="-1" backdrop="false" role="dialog"
+                     aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span
+                                        aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel">处理退单</h4>
+                            </div>
+                            <div class="modal-body" style="align-content: center">
+                                <input type="hidden" id="returnId">
+                                   <select id="returnStatus" style="padding-left: 300px">
+                                       <option value="daituikuan">同意退货</option>
+                                       <option value="jujue">拒绝退货</option>
+                                       <option value="wancheng">已退款</option>
+                                   </select>
+                                    <button type="submit" class="btn blue" id="saveBtn" onclick="saveStatus()">确定</button>
+                                </div>
+                        </div>
+                    </div>
+                </div>
 
 
                 <div class="table-container">
@@ -65,29 +70,21 @@
                         <thead>
                         <tr role="row" class="heading">
                             <#--<th width="15%">订单编号</th>-->
-                            <th width="15%">订单编号</th>
+                            <th width="15%">退货编号</th>
                             <th width="15%">商品数量</th>
                             <th width="8%">交易金额</th>
-                            <th width="8%">支付状态</th>
                             <th width="15%">交易时间</th>
+                            <th width="5%">当前收货人</th>
                             <th width="5%">当前收货人</th>
                             <th width="20%">操作</th>
                         </tr>
                         <tr role="row" class="filter">
-                            <td></td>
                             <td>
-                                <input type="text" class="form-control form-filter input-sm" name="search_LIKE_counts" value="">
+                                <input type="text" class="form-control form-filter input-sm" name="search_LIKE_orderNo" value="">
                             </td>
                             <td></td>
+                            <td></td>
                             <td>
-                                <#--<select name="search_LIKE_isTop" class="form-control form-filter input-sm">-->
-                                    <#--<option value="">所有</option>-->
-                                    <#--<option value="true">是</option>-->
-                                    <#--<option value="false">否</option>-->
-                                <#--</select>-->
-                            </td>
-                            <td>
-
                                 <div class="margin-bottom-5">
                                     <div class="input-group date date-picker margin-bottom-5" data-date-format="yyyy-mm-dd">
                                         <input type="text" class="form-control form-filter input-sm" readonly name="search_LIKE_startTime" placeholder="From">
@@ -99,6 +96,7 @@
                                     </div>
                                 </div>
                             </td>
+                            <td></td>
                             <td></td>
                             <td>
                                 <div class="margin-bottom-5">
@@ -146,33 +144,44 @@
                 ],
                 "iDisplayLength":10,
                 "bServerSide":true,
-                "sAjaxSource":"${rc.contextPath}/order/head/list",
+                "sAjaxSource":"${rc.contextPath}/order/return/list",
                 "aaSorting":[
                     [ 0,"desc" ]
                 ],
                 "aoColumns":[
-                    { "sTitle":"订单编号","mData":"orderHeadNo","mRender":function(data,type,row){
+                    { "sTitle":"退货编号","mData":"orderReturnNo","mRender":function(data,type,row){
                         return data;
                     }},
-                    {  "sTitle":"商品数量","mData":"counts","mRender":function(data,type,row){
+                    {  "sTitle":"商品数量","mData":"orderDetail.","mRender":function(data,type,row){
                         return data;
                     }},
                     {  "sTitle":"交易金额","mData":"money","mRender":function(data,type,row){
                         return data;
                     }},
-                    {  "sTitle":"支付状态","mData":"status","mRender":function(data,type,row){
-                        if(data == 'daifahuo'){
-                            return "待发货";
-                        }
-                    }},
-                    { "sTitle":"交易时间","mData":"createTime","mRender":function(data,type,row){
+
+                    { "sTitle":"退货时间","mData":"createTime","mRender":function(data,type,row){
                         return getYmd(changeDate(parseFloat(data)));
                     }},
-                    {  "sTitle":"当前收货人","mData":"userName","mRender":function(data,type,row){
+                    {  "sTitle":"退货理由","mData":"userName","mRender":function(data,type,row){
                         return data;
                     }},
+                    {  "sTitle":"退货状态","mData":"status","mRender":function(data,type,row){
+                        if(data=='daishenhe'){
+                            return "待审核"
+                        }
+                        else if(data=='daituikuan'){
+                            return "待退款"
+                        }
+                        else if(data=='jujue'){
+                            return "决绝退款"
+                        }
+                        else if(data=='wancheng'){
+                            return "退货完成"
+                        }
+                    }},
                     {  "sTitle":"操作","mData":"id","sDefaultContent":"","mRender":function(data,type,row){
-                        var a='<a href="${rc.contextPath}/order/head/detail/'+data+'" class="update btn default btn-xs purple"  title="编辑" >查看</a>';
+                        var a='<a href="javascript:void(0)" class="update btn default btn-xs purple" title="编辑" onclick="showModel('+data+')">处理</a>';
+                        //onclick="javascript:$('#uploadModal').modal('toggle');"
                        return a;
                     }}
                 ]
@@ -196,6 +205,25 @@
                 dataType:"json",
                 traditional:true,
                 success:function(){
+                    grid.getDataTable().fnDraw();
+                }
+            });
+        }
+
+        function showModel(id){
+            $('#uploadModal').modal('toggle');
+            $('#returnId').val(id);
+
+        }
+        function saveStatus(){
+            $.ajax({
+                url:'${rc.contextPath}/order/return/approve',
+                type:'POST',
+                data:{"id": $('#returnId').val(),"status": $('#returnStatus').val()},
+                dataType:"json",
+                traditional:true,
+                success:function(){
+                    $('#uploadModal').modal('toggle');
                     grid.getDataTable().fnDraw();
                 }
             });

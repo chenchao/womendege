@@ -26,7 +26,7 @@ public class OrderPay extends AuditEntity{
     private BigDecimal afterDaynMoney;//订单金额
     private BigDecimal money;//订单金额
 
-    @Enumerated(EnumType.STRING)
+
     private SourceType sourceType;//pc还是app
     private String remark;//备注
 
@@ -110,6 +110,7 @@ public class OrderPay extends AuditEntity{
     public void setRemark(String remark){
         this.remark=remark;
     }
+    @Enumerated(EnumType.STRING)
     public SourceType getSourceType(){
         return sourceType;
     }

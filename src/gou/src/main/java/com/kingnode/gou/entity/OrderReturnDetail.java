@@ -1,6 +1,8 @@
 package com.kingnode.gou.entity;
 import java.math.BigDecimal;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -27,7 +29,7 @@ public class OrderReturnDetail extends AuditEntity{
     private String img1;//图片地址
     private String img2;//图片地址
     private String img3;//图片地址
-
+    @Enumerated(EnumType.STRING)
     public ReturnStatus getStatus(){
         return status;
     }

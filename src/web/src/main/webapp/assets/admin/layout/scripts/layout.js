@@ -441,7 +441,8 @@ var Layout=function(){
             if(color=='light2'){
                 $('.page-logo img').attr('src',ctx+'/assets/admin/layout/img/logo-invert.png');
             }else{
-                $('.page-logo img').attr('src',ctx+'/assets/admin/layout/img/logo.png');
+                //$('.page-logo img').attr('src',ctx+'/assets/admin/layout/img/logo.png');
+                $('.page-logo img').attr('src',ctx+'/assets/admin/layout/img/');
             }
             if($.cookie){
                 $.cookie('style_color',color);

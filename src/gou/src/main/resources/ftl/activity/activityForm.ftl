@@ -52,7 +52,7 @@
                             <div class="col-md-4">
                                 <div class="input-group">
                                 <#--<span class="input-group-addon"><i class="fa fa-key"></i></span>-->
-                                    <input check-type='required' readonly name="name" type="text" class="form-control" placeholder="" value="${activity.name}">
+                                    <input check-type='required' name="name" type="text" class="form-control" placeholder="" value="${activity.name}">
 
                                 </div>
                             </div>
@@ -87,7 +87,7 @@
 
                             <div class="col-md-4">
                                 <div id="startDateOpen" class="input-group date date-picker" data-date-format="yyyy-mm-dd">
-                                    <input id="startDate" type="text" class="form-control" readonly name="req_startDate" placeholder="启动日期" value="${active.startTime}">
+                                    <input id="startDate" type="text" class="form-control" readonly name="req_startDate" placeholder="开始日期" value="${active.startTime}">
                                     <span class="input-group-btn"><button id="No_an" class="btn default" type="button"><i class="fa fa-calendar"></i></button></span>
                                 </div>
                             </div>
@@ -95,7 +95,7 @@
                             <label class="col-md-2 control-label">结束时间</label>
                             <div class="col-md-4">
                                 <div id="endDateOpen" class="input-group date date-picker" data-date-format="yyyy-mm-dd ">
-                                    <input id="startDate" type="text" class="form-control" readonly name="req_startDate" placeholder="启动日期" value="${active.endTime}">
+                                    <input id="startDate" type="text" class="form-control" readonly name="req_startDate" placeholder="结束日期" value="${active.endTime}">
                                     <span class="input-group-btn"><button id="No_an" class="btn default" type="button"><i class="fa fa-calendar"></i></button></span>
                                 </div>
                             </div>
@@ -112,7 +112,7 @@
                             <label class="col-md-2 control-label">状态</label>
                             <div class="col-md-4">
                                 <div class="input-group">
-                                    <input check-type='required' name="state" type="text"  class="form-control required " placeholder="" value="${activity.state}">
+                                ${activity.state}
                                 </div>
                             </div>
                         </div>
@@ -148,76 +148,85 @@
             </form>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <ul class="page-breadcrumb breadcrumb" style="margin: 0px;padding: 10px;">
-                    <li>
-                        <i class="fa fa-home"></i>
-                        <a href="javascript:void(0)">活动图片</a>
-                        <i class="fa fa-angle-right"></i>
-                    </li>
-                </ul>
+        <c:if test="${activity??}">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="page-breadcrumb breadcrumb" style="margin: 0px;padding: 10px;">
+                        <li>
+                            <i class="fa fa-home"></i>
+                            <a href="javascript:void(0)">活动图片</a>
+                            <i class="fa fa-angle-right"></i>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-
-        <div class="table-container">
-            <div class="table-actions-wrapper"><span></span>
-            </div>
-            <table class="table table-striped table-bordered table-hover dataTable" style="width: 81%" align="center">
-                <thead>
-                <tr role="row" class="heading">
-                    <th width="10%">位置</th>
-                    <th width="10%">编码</th>
-                    <th width="10%">类型</th>
-                    <th width="10%">宽</th>
-                    <th width="10%">高</th>
-                    <th width="40%">图片</th>
-                    <th width="10%">操作</th>
-                </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+            <div class="table-container">
+                <div class="table-actions-wrapper"><span></span>
+                </div>
+                <table class="table table-striped table-bordered table-hover dataTable" style="width: 81%" align="center">
+                    <thead>
+                    <tr role="row" class="heading">
+                        <th width="10%">位置</th>
+                        <th width="10%">编码</th>
+                        <th width="10%">类型</th>
+                        <th width="10%">宽</th>
+                        <th width="10%">高</th>
+                        <th width="40%">图片</th>
+                        <th width="10%">操作</th>
                     </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <ul class="page-breadcrumb breadcrumb" style="margin: 0px;padding: 10px;">
-                    <li>
-                        <i class="fa fa-home"></i>
-                        <a href="javascript:void(0)">活动商品</a>
-                        <i class="fa fa-angle-right"></i>
-                    </li>
-                </ul>
+                    </thead>
+                    <tbody>
+                    <c:forEach var="ap" items="${activityPositions}">
+                        <tr>
+                            <td><c:out value="${ap.position.name}"/></td>
+                            <td><c:out value="${ap.position.code}"/></td>
+                            <td><c:out value="${ap.position.type}"/></td>
+                            <td><c:out value="${ap.position.width}"/></td>
+                            <td><c:out value="${ap.position.height}"/></td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${ap.imgPath!= '' && ap.imgPath!= null }">
+                                        <img src="${rc.contextPath}/${ap.imgPath}" />
+                                    </c:when>
+                                </c:choose>
+                            </td>
+                            <td>${ap.id}</td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
             </div>
-        </div>
-        <div class="table-container">
-            <div class="table-actions-wrapper"><span></span>
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="page-breadcrumb breadcrumb" style="margin: 0px;padding: 10px;">
+                        <li>
+                            <i class="fa fa-home"></i>
+                            <a href="javascript:void(0)">活动商品</a>
+                            <i class="fa fa-angle-right"></i>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <table class="table table-striped table-bordered table-hover" style="width: 81%" align="center"  id="comment_data_table">
-                <thead>
-                <tr role="row" class="heading">
-                    <th width="10%">位置</th>
-                    <th width="10%">编码</th>
-                    <th width="10%">类型</th>
-                    <th width="10%">宽</th>
-                    <th width="10%">高</th>
-                    <th width="40%">图片</th>
-                    <th width="10%">操作</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
+            <div class="table-container">
+                <div class="table-actions-wrapper"><span></span>
+                </div>
+                <table class="table table-striped table-bordered table-hover" style="width: 81%" align="center"  id="comment_data_table">
+                    <thead>
+                    <tr role="row" class="heading">
+                        <th width="10%">位置</th>
+                        <th width="10%">编码</th>
+                        <th width="10%">类型</th>
+                        <th width="10%">宽</th>
+                        <th width="10%">高</th>
+                        <th width="40%">图片</th>
+                        <th width="10%">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </c:if>
     </div>
 </div>
 </body>
@@ -238,51 +247,54 @@
             language:'zh-CN'
         });
         var grid=new Datatable();
-        grid.init({
-            src:$("#comment_data_table"),
-            onSuccess:function(grid){
-            },
-            onError:function(grid){
-            },
-            dataTable:{
-                //"sDom":"<'table-scrollable't><'row'<'col-md-8 col-sm-12'pli><'col-md-4 col-sm-12'>r>>",//dataTable翻页,只保留表格底部翻页样式
-                "sDom":'<<"clear">>rt<"bottom">',
-                "aLengthMenu":[
-                    [10,20,50,-1],
-                    [10,20,50,"All"]
-                ],
-                "iDisplayLength":10,
-                "bServerSide":true,
-                "sAjaxSource":"${rc.contextPath}/order/detail/list?search_LIKE_orderHeadId="+'${orderHead.id}',
-                "aaSorting":[
-                    [ 0,"desc" ]
-                ],
-                "aoColumns":[
+        if('${activity.id}'!=""){
+            grid.init({
+                src:$("#comment_data_table"),
+                onSuccess:function(grid){
+                },
+                onError:function(grid){
+                },
+                dataTable:{
+                    //"sDom":"<'table-scrollable't><'row'<'col-md-8 col-sm-12'pli><'col-md-4 col-sm-12'>r>>",//dataTable翻页,只保留表格底部翻页样式
+                    "sDom":'<<"clear">>rt<"bottom">',
+                    "aLengthMenu":[
+                        [10,20,50,-1],
+                        [10,20,50,"All"]
+                    ],
+                    "iDisplayLength":10,
+                    "bServerSide":true,
+                    "sAjaxSource":"${rc.contextPath}/activity/activityProductList/${activity.id}",
+                    "aaSorting":[
+                        [ 0,"desc" ]
+                    ],
+                    "aoColumns":[
 
-                    { "sTitle":"位置","mData":"orderNo","mRender":function(data,type,row){
-                    return data;
-                    }},
-                    {  "sTitle":"编码","mData":"quatity","mRender":function(data,type,row){
+                        { "sTitle":"位置","mData":"orderNo","mRender":function(data,type,row){
                         return data;
-                    }},
-                    {  "sTitle":"类型","mData":"quatity","mRender":function(data,type,row){
-                        return data;
-                    }},
-                    {  "sTitle":"宽","mData":"quatity","mRender":function(data,type,row){
-                        return data;
-                    }},
-                    {  "sTitle":"高","mData":"price","mRender":function(data,type,row){
-                        return data;
-                    }},
-                    {  "sTitle":"图片","mData":"price","mRender":function(data,type,row){
-                        return data;
-                    }},
-                    {  "sTitle":"操作","mData":"price","mRender":function(data,type,row){
-                        return data;
-                    }}
-                ]
-            }
-        });
+                        }},
+                        {  "sTitle":"编码","mData":"quatity","mRender":function(data,type,row){
+                            return data;
+                        }},
+                        {  "sTitle":"类型","mData":"quatity","mRender":function(data,type,row){
+                            return data;
+                        }},
+                        {  "sTitle":"宽","mData":"quatity","mRender":function(data,type,row){
+                            return data;
+                        }},
+                        {  "sTitle":"高","mData":"price","mRender":function(data,type,row){
+                            return data;
+                        }},
+                        {  "sTitle":"图片","mData":"price","mRender":function(data,type,row){
+                            return data;
+                        }},
+                        {  "sTitle":"操作","mData":"price","mRender":function(data,type,row){
+                            return data;
+                        }}
+                    ]
+                }
+            });
+        }
+
 
         function getYmd(date){
             return date.substr(0,10);

@@ -1,4 +1,5 @@
 package com.kingnode.gou.service;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -7,6 +8,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import com.google.common.collect.Lists;
+import com.kingnode.diva.mapper.JsonMapper;
 import com.kingnode.gou.dao.ProductCatalogAttrDao;
 import com.kingnode.gou.dao.ProductCatalogDao;
 import com.kingnode.gou.entity.ProductCatalog;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 /**
@@ -26,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service @Transactional(readOnly=true) public class ProductCatalogService{
     @Autowired private ProductCatalogDao catalogDao;
     @Autowired private ProductCatalogAttrDao catalogAttrDao;
+    @Autowired private JdbcTemplate jdbcTemplate;
     @Transactional(readOnly=false) public void saveProductCatalog(ProductCatalog catalog){
         catalogDao.save(catalog);
     }
@@ -45,7 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
         StringBuilder sb=new StringBuilder();
         List<ProductCatalogAttr> attrs=listProductCatalogAttrByCatalogId(catalogId);
         if(attrs!=null){
-            for(ProductCatalogAttr attr:attrs){
+            for(ProductCatalogAttr attr : attrs){
                 sb.append(attr.getCatalogAttrName()).append(",");
             }
         }
@@ -54,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
     public DataTable<ProductCatalog> pageProductCatalog(DataTable<ProductCatalog> dt,final Map<String,Object> searchParams){
         Sort.Direction d="asc".equals(dt.getsSortDir_0())?Sort.Direction.ASC:Sort.Direction.DESC;//升降序
         int index=Integer.parseInt(dt.getiSortCol_0());
-        String[] column=new String[]{"catalogName","catalogDesc"};
+        String[] column=new String[]{"catalogName","catalogType","catalogDesc"};
         PageRequest pageRequest=new PageRequest(dt.pageNo(),dt.getiDisplayLength(),new Sort(d,column[index]));
         Page<ProductCatalog> page=catalogDao.findAll(new Specification<ProductCatalog>(){
             @Override public Predicate toPredicate(Root<ProductCatalog> root,CriteriaQuery<?> query,CriteriaBuilder cb){
@@ -63,6 +67,9 @@ import org.springframework.transaction.annotation.Transactional;
                 for(String key : searchParams.keySet()){
                     if(key.contains("LIKE_catalogName")&&StringUtils.isNotEmpty(searchParams.get(key).toString())){
                         predicates.add(cb.like(root.<String>get("catalogName"),"%"+searchParams.get(key).toString().trim()+"%"));
+                    }
+                    if(key.contains("EQ_catalogType")&&StringUtils.isNotEmpty(searchParams.get(key).toString())){
+                        predicates.add(cb.equal(root.<String>get("catalogType"),searchParams.get(key).toString().trim()));
                     }
                 }
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
@@ -132,5 +139,26 @@ import org.springframework.transaction.annotation.Transactional;
     }
     public List<ProductCatalogAttr> listProductCatalogAttrByCatalogId(Long catalogId){
         return catalogAttrDao.findByCatalogId(catalogId);
+    }
+    public List<ProductCatalogAttr> listProductCatalogAttrByCatalogId(Long catalogId,Long productId,String type){
+        String sql="select a.*,b.catalog_attr_val from product_catalog_attr a left join product_catalog_attr_val b on a.id=b.catalog_attr_id and "+("1".equals(type)?"b.product_id=?":"b.product_sub_id=?")+" where a.catalog_id=? order by a.catalog_attr_sort asc";
+        List<Object> params=Lists.newArrayList();
+        params.add(productId);
+        params.add(catalogId);
+        System.out.println("==========================>sql="+sql+";params="+JsonMapper.nonDefaultMapper().toJson(params));
+        List<Map<String,Object>> mapList=jdbcTemplate.queryForList(sql,params.toArray());
+        List<ProductCatalogAttr> list=Lists.newArrayList();
+        if(mapList!=null&&mapList.size()>0){
+            for(Map<String,Object> map : mapList){
+                ProductCatalogAttr attr=new ProductCatalogAttr();
+                attr.setId(map.get("id")!=null?Long.valueOf(map.get("id").toString()):0l);
+                attr.setCatalogId(map.get("catalog_id")!=null?Long.valueOf(map.get("catalog_id").toString()):0l);
+                attr.setCatalogAttrSort(map.get("catalog_attr_sort")!=null?Integer.valueOf(map.get("catalog_attr_sort").toString()):0);
+                attr.setCatalogAttrName(map.get("catalog_attr_name")!=null?map.get("catalog_attr_name").toString():"");
+                attr.setCatalogAttrVal(map.get("catalog_attr_val")!=null?map.get("catalog_attr_val").toString():"");
+                list.add(attr);
+            }
+        }
+        return list;
     }
 }

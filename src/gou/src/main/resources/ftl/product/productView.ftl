@@ -19,7 +19,7 @@
                 <i class="fa fa-angle-right"></i>
             </li>
             <li>
-                <a href="${rc.contextPath}/product/class">商品</a>
+                <a href="${rc.contextPath}/product/detail">商品</a>
                 <i class="fa fa-angle-right"></i>
             </li>
             <li>
@@ -38,27 +38,20 @@
                 </div>
                 <div class="actions">
                     <div class="btn-group">
-                        <a href="${rc.contextPath}/product/class/create/${d.classCode}" class="btn green">
+                        <a href="${rc.contextPath}/product/detail/update/${d.id}" class="btn green">
                             <i class="fa fa-plus"></i>
                             <span class="hidden-480">编辑商品信息</span>
                         </a>
-                    <#if d.parentClass?? && d.parentClass =='ROOT'>
-                        <a href="${rc.contextPath}/product/class" class="btn green">
+                        <a href="${rc.contextPath}/product/detail" class="btn green">
                             <i class="fa fa-undo"></i>
                             <span class="hidden-480">返回</span>
                         </a>
-                    <#else>
-                        <a href="${rc.contextPath}/product/class/sub-view/${d.parentClass}" class="btn green">
-                            <i class="fa fa-undo"></i>
-                            <span class="hidden-480">返回</span>
-                        </a>
-                    </#if>
                     </div>
                 </div>
             </div>
             <div class="portlet-body form">
                 <div class="form-horizontal form-bordered">
-                    <input type="hidden" id="classId" name="classId" value="${d.id}">
+                    <input type="hidden" id="productId" name="classId" value="${d.id}">
                     <div class="form-body">
                         <div class="form-group">
                             <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">基本信息</label>
@@ -66,78 +59,64 @@
                         <div class="form-group">
                             <label class="col-md-2 control-label">商品编码</label>
                             <div class="col-md-4">
-                                商品编码商品编码商品编码
+                            ${d.productCode}
                             </div>
                             <label class="col-md-2 control-label">商品名称</label>
                             <div class="col-md-4">
-                                商品名称商品名称商品名称
+                            ${d.productName}
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-md-2 control-label">所属品牌</label>
                             <div class="col-md-4">
-                                所属品牌所属品牌所属品牌
+                            ${brandName}
                             </div>
                             <label class="col-md-2 control-label">商品简称</label>
                             <div class="col-md-4">
-                                商品简称商品简称商品简称
+                            ${d.productShortName}
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-md-2 control-label">所属分类</label>
                             <div class="col-md-8">
-                                所属分类所属分类所属分类
+                            ${parentName}
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-md-2 control-label">商品描述</label>
                             <div class="col-md-8">
-                                商品描述商品描述商品描述
+                            ${d.productDesc}
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">其他属性
-                                <font color="blue" style="font-size: small;">目录组名称</font>
+                                <font color="blue" style="font-size: small;">${catalogName}</font>
                             </label>
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">产地</label>
-                            <div class="col-md-4">
-                                产地产地产地
-                            </div>
-                            <label class="col-md-2 control-label">试用年龄</label>
-                            <div class="col-md-4">
-                                试用年龄试用年龄试用年龄
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">包装类型</label>
-                            <div class="col-md-4">
-                                包装类型包装类型包装类型
-                            </div>
-                            <label class="col-md-2 control-label">保质期</label>
-                            <div class="col-md-4">
-                                保质期保质期保质期
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">商品条码</label>
-                            <div class="col-md-4">
-                                商品条码商品条码商品条码
-                            </div>
-                            <label class="col-md-2 control-label">其他</label>
-                            <div class="col-md-4">
-                                其他其他其他其他其他其他
-                            </div>
-                        </div>
+                        <#if (attrs_length>0)>
+                            <div class="form-group">
+                            <#list attrs as attr>
+                                    <label class="col-md-2 control-label">${attr.catalogAttrName}</label>
+                                    <div class="col-md-4">
+                                    ${attr.catalogAttrVal}
+                                    </div>
+                                <#if attr_index%2!=0>
+                                </div>
+                                    <#if (attr_index<attrs_length-1)>
+                                    <div class="form-group">
+                                    </#if>
+                                </#if>
+                            </#list>
+                        </#if>
                         <div class="form-group">
                             <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">商品图片</label>
                         </div>
                         <div class="form-group">
                             <div class="col-md-12">
-                                <span id="spanShow" style="padding-left: 50px;font-size: 14px;">暂无图片</span>
+                                <span id="spanShow" style="padding-left: 50px;font-size: 14px;"></span>
                             </div>
                         </div>
+                        <span id="spanFile">
                     </div>
                 </div>
             </div>
@@ -159,7 +138,7 @@ ${message}
                 </div>
                 <div class="actions">
                     <div class="btn-group">
-                        <a href="${rc.contextPath}/product/class/create/${d.classCode}" class="btn green">
+                        <a href="${rc.contextPath}/product/detail/create-sub/${d.id}" class="btn green">
                             <i class="fa fa-plus"></i>
                             <span class="hidden-480">新增商品详情</span>
                         </a>
@@ -169,246 +148,84 @@ ${message}
             <div class="portlet-body form">
                 <div class="form-horizontal form-bordered">
                     <div class="form-body">
-                        <div class="form-actions fluid">
-                            <div class="col-md-offset-5 col-md-7">
-                                商品详情1
-                                <button type="button" id="saveBtn" class="btn green" onclick="saveInfo();">编辑详情</button>
+                        <#list details as detail>
+                            <div class="form-actions fluid">
+                                <div class="col-md-offset-5 col-md-7">
+                                    商品详情【${detail_index+1}】
+                                    <button type="button" class="btn green" onclick="editInfo('${detail.id}');">编辑详情</button>
+                                    <button type="button" class="btn red" onclick="deleteInfo('${detail.id}');">删除详情</button>
+                                </div>
                             </div>
-                            <input type="hidden" id="classId" name="classId" value="${d.id}">
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情信息</label>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">详情编码</label>
-                            <div class="col-md-4">
-                                详情编码详情编码详情编码
+                            <div class="form-group">
+                                <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情信息</label>
                             </div>
-                            <label class="col-md-2 control-label">详情名称</label>
-                            <div class="col-md-4">
-                                详情名称详情名称详情名称
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">详情编码</label>
+                                <div class="col-md-4">
+                                ${detail.productSubCode}
+                                </div>
+                                <label class="col-md-2 control-label">详情名称</label>
+                                <div class="col-md-4">
+                                ${detail.productSubName}
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">详情单位</label>
-                            <div class="col-md-4">
-                                详情单位详情单位详情单位
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">详情单位</label>
+                                <div class="col-md-4">
+                                ${detail.productUnit}
+                                </div>
+                                <label class="col-md-2 control-label">详情单价</label>
+                                <div class="col-md-4">
+                                ${detail.productPrice}
+                                </div>
                             </div>
-                            <label class="col-md-2 control-label">详情单价</label>
-                            <div class="col-md-4">
-                                详情单价详情单价详情单价详情单价
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">详情库存</label>
+                                <div class="col-md-4">
+                                ${detail.productStock}
+                                </div>
+                                <label class="col-md-2 control-label">是否上架</label>
+                                <div class="col-md-4">
+                                <#if detail.productShelves==1>是<#else>否</#if>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">详情库存</label>
-                            <div class="col-md-4">
-                                详情库存详情库存详情库存详情库存
+                            <div class="form-group">
+                                <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情规格
+                                    <font color="blue" style="font-size: small;">${detail.catalogName}</font>
+                                </label>
                             </div>
-                            <label class="col-md-2 control-label">是否上架</label>
-                            <div class="col-md-4">
-                                是否上架是否上架是否上架是否上架
+                            <#list detail.subAttrs as sub_attr>
+                                <#if sub_attr_index%2==0>
+                                <div class="form-group">
+                                </#if>
+                                <label class="col-md-2 control-label">${sub_attr.catalogAttrName}</label>
+                                <div class="col-md-4">
+                                ${sub_attr.catalogAttrVal}
+                                </div>
+                                <#if sub_attr_index%2!=0>
+                                </div>
+                                </#if>
+                            </#list>
+                            <div class="form-group">
+                                <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情图片
+                                </label>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情规格
-                                <font color="blue" style="font-size: small;">规格名称</font>
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">85CM</label>
-                            <div class="col-md-4">
-                                12
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <span id="spanShow_${detail.id}" style="padding-left: 50px;font-size: 14px;">
+                                        <#list detail.pictures as picture>
+                                            <#if picture.pictureType=='gif'||picture.pictureType=='jpeg'||picture.pictureType=='jpg'||picture.pictureType=='png'>
+                                            <a href="${picture.pictureUrl}" class="fancybox" rel="img"><img src="${rc.contextPath}${picture.pictureUrl}" width="54px" height="54px"></a>
+                                            <#elseif picture.pictureType=='wav'>
+                                            <a href="${picture.pictureUrl}" target="_blank"><img src="${rc.contextPath}/assets/voice.png" width="54px" height="54px"></a>
+                                            <#elseif picture.pictureType=='mp4'>
+                                            <a href="${picture.pictureUrl}" target="_blank"><img src="${rc.contextPath}/assets/video.png" width="54px" height="54px"></a>
+                                            </#if>
+                                        </#list>
+                                    </span>
+                                </div>
                             </div>
-                            <label class="col-md-2 control-label">90CM</label>
-                            <div class="col-md-4">
-                                10
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">100CM</label>
-                            <div class="col-md-4">
-                                0
-                            </div>
-                            <label class="col-md-2 control-label">110CM</label>
-                            <div class="col-md-4">
-                                4
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">120CM</label>
-                            <div class="col-md-4">
-                                1
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情图片
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                <span id="spanShow" style="padding-left: 50px;font-size: 14px;">暂无图片</span>
-                            </div>
-                        </div>
-                        <div class="form-actions fluid">
-                            <div class="col-md-offset-5 col-md-7">
-                                商品详情2
-                                <button type="button" id="saveBtn" class="btn green" onclick="saveInfo();">编辑详情</button>
-                            </div>
-                            <input type="hidden" id="classId" name="classId" value="${d.id}">
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情信息</label>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">详情编码</label>
-                            <div class="col-md-4">
-                                详情编码详情编码详情编码
-                            </div>
-                            <label class="col-md-2 control-label">详情名称</label>
-                            <div class="col-md-4">
-                                详情名称详情名称详情名称
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">详情单位</label>
-                            <div class="col-md-4">
-                                详情单位详情单位详情单位
-                            </div>
-                            <label class="col-md-2 control-label">详情单价</label>
-                            <div class="col-md-4">
-                                详情单价详情单价详情单价详情单价
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">详情库存</label>
-                            <div class="col-md-4">
-                                详情库存详情库存详情库存详情库存
-                            </div>
-                            <label class="col-md-2 control-label">是否上架</label>
-                            <div class="col-md-4">
-                                是否上架是否上架是否上架是否上架
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情规格
-                                <font color="blue" style="font-size: small;">规格名称</font>
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">85CM</label>
-                            <div class="col-md-4">
-                                12
-                            </div>
-                            <label class="col-md-2 control-label">90CM</label>
-                            <div class="col-md-4">
-                                10
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">100CM</label>
-                            <div class="col-md-4">
-                                0
-                            </div>
-                            <label class="col-md-2 control-label">110CM</label>
-                            <div class="col-md-4">
-                                4
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">120CM</label>
-                            <div class="col-md-4">
-                                1
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情图片
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                <span id="spanShow" style="padding-left: 50px;font-size: 14px;">暂无图片</span>
-                            </div>
-                        </div>
-                        <div class="form-actions fluid">
-                            <div class="col-md-offset-5 col-md-7">
-                                商品详情3
-                                <button type="button" id="saveBtn" class="btn green" onclick="saveInfo();">编辑详情</button>
-                            </div>
-                            <input type="hidden" id="classId" name="classId" value="${d.id}">
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情信息</label>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">详情编码</label>
-                            <div class="col-md-4">
-                                详情编码详情编码详情编码
-                            </div>
-                            <label class="col-md-2 control-label">详情名称</label>
-                            <div class="col-md-4">
-                                详情名称详情名称详情名称
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">详情单位</label>
-                            <div class="col-md-4">
-                                详情单位详情单位详情单位
-                            </div>
-                            <label class="col-md-2 control-label">详情单价</label>
-                            <div class="col-md-4">
-                                详情单价详情单价详情单价详情单价
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">详情库存</label>
-                            <div class="col-md-4">
-                                详情库存详情库存详情库存详情库存
-                            </div>
-                            <label class="col-md-2 control-label">是否上架</label>
-                            <div class="col-md-4">
-                                是否上架是否上架是否上架是否上架
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情规格
-                                <font color="blue" style="font-size: small;">规格名称</font>
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">85CM</label>
-                            <div class="col-md-4">
-                                12
-                            </div>
-                            <label class="col-md-2 control-label">90CM</label>
-                            <div class="col-md-4">
-                                10
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">100CM</label>
-                            <div class="col-md-4">
-                                0
-                            </div>
-                            <label class="col-md-2 control-label">110CM</label>
-                            <div class="col-md-4">
-                                4
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">120CM</label>
-                            <div class="col-md-4">
-                                1
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情图片
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                <span id="spanShow" style="padding-left: 50px;font-size: 14px;">暂无图片</span>
-                            </div>
-                        </div>
+                        </#list>
                     </div>
                 </div>
             </div>
@@ -440,32 +257,64 @@ ${message}
             $(".alert").alert('close');
         }
         $(document).ready(function(){
-            setInterval(alertClose,3*1000);
-        });
-        var grid=new Datatable();
-        grid.setAjaxParam("search_EQ_parentClass",'${d.classCode}');
-        grid.init({
-            src:$("#data_table"),dataTable:{
-                "aLengthMenu":[[5,10,20,50,100,-1],[5,10,20,50,100,"All"]],
-                "aaSorting":[[2,"asc"]],
-                "iDisplayLength":5,
-                "bServerSide":true,
-                "aoColumnDefs":[{"bSortable":false,"aTargets":[0,1,2,3,4,5]}],
-                "sAjaxSource":"${rc.contextPath}/product/class",
-                "aoColumns":[{
-                    "sTitle":"分类编码","mData":"classCode","mRender":function(data,type,row){
-                        return '<a href="javascript:goView('+row.id+')">'+data+'</a>';
-                    }
-                },{"sTitle":"分类名称","mData":"className"},{"sTitle":"分类排序","mData":"classSort"},{"sTitle":"关键字","mData":"classKeyword"},{"sTitle":"描述","mData":"classDesc"},{
-                    "sTitle":"操作","mData":"id","mRender":function(data,type,row){
-                        var a='<a class="btn btn-xs red" href="javascript:delData('+row.id+')"><i class="fa fa-trash-o"></i>删除</a></div>';
-                        var b='<a class="btn btn-xs blue" href="javascript:subView('+row.classCode+')"><i class="fa fa-edit"></i>编辑子类</a></div>';
-                        return a+b;
-                    }
-                }]
+            $(".fancybox").fancybox({
+                prevEffect	: 'none',
+                nextEffect	: 'none',
+                openEffect	: 'none',
+                closeEffect	: 'none'
+            });
+            var pictures=getAttachment('${d.id}','1');
+            if(pictures&&pictures.length>0){
+                for(var i=0;i<pictures.length;i++){
+                    var spanFile=$("#spanFile");
+                    var attachmentExt='<input type="hidden" id="ext'+pictures[i].pictureName+'" name="fileExt" value="'+pictures[i].pictureType+'" />';
+                    var attachmentAddress='<input type="hidden" id="address'+pictures[i].pictureName+'" name="fileAddress" value="'+pictures[i].pictureUrl+'" />';
+                    var attachmentUuid='<input type="hidden" id="uuid'+pictures[i].pictureName+'" name="fileUuid" value="'+pictures[i].pictureName+'" />';
+                    spanFile.append(attachmentExt);
+                    spanFile.append(attachmentAddress);
+                    spanFile.append(attachmentUuid);
+                    showAttachment(pictures[i].pictureType,pictures[i].pictureUrl,pictures[i].pictureName);
+                }
             }
         });
-        function delData(id){
+
+        function showAttachment(ext,address,uuid){
+            var spanHtml='<span id="span'+uuid+'">';
+            ext=ext.toLowerCase();
+            if(ext=="gif"||ext=="jpeg"||ext=="jpg"||ext=="png"){
+                spanHtml+='<a href="'+address+'" class="fancybox" rel="img"><img src="'+address+'" width="54px" height="54px">';
+            }else if(ext=="wav"){
+                spanHtml+='<a href="'+address+'" target="_blank"><img src="${rc.contextPath}/assets/voice.png" width="54px" height="54px">';
+            }else if(ext=="mp4"){
+                spanHtml+='<a href="'+address+'" target="_blank"><img src="${rc.contextPath}/assets/video.png" width="54px" height="54px">';
+            }
+            spanHtml+='</a>';
+        <#if action?? && action !='view'>
+            spanHtml+='&nbsp;&nbsp;<a href="javascript:void(0)" onclick="deleteAttachment(\''+uuid+'\')">［删除］</a>';
+        </#if>
+            spanHtml+='</span>&nbsp;&nbsp;';
+            $('#spanShow').append(spanHtml);
+        }
+        function getAttachment(id,type){
+            var list=[];
+            $.ajax({
+                url:'${rc.contextPath}/product/detail/get-attachment/'+id+'/'+type,
+                type:'POST',
+                dataType:"json",
+                traditional:true,
+                async:false,
+                success:function(data){
+                    if(data&&data.length>0){
+                        list=data;
+                    }
+                }
+            });
+            return list;
+        }
+        function editInfo(id){
+            document.location="${rc.contextPath}/product/detail/update-sub/"+id;
+        }
+        function deleteInfo(id){
             bootbox.dialog({
                 message:"您是否确认删除该数据项？",buttons:{
                     main:{
@@ -476,9 +325,9 @@ ${message}
                         label:"确定",className:"green",callback:function(){
                             Metronic.startPageLoading();
                             $.ajax({
-                                url:'${rc.contextPath}/product/class/delete/'+id,type:'POST',dataType:"json",traditional:true,success:function(data){
+                                url:'${rc.contextPath}/product/detail/delete-sub/'+id,type:'POST',dataType:"json",traditional:true,success:function(data){
                                     if(data.result=="success"){
-                                        grid.getDataTable().fnDraw();
+                                        location.reload();
                                     }else{
                                         bootbox.alert("删除数据失败!");
                                     }
@@ -489,20 +338,6 @@ ${message}
                     }
                 }
             });
-        }
-        $('.table-group-action-submit').click(function(){
-            selectAjax($("#selectInput").val());
-        });
-        function selectAjax(value){
-            grid.setAjaxParam("search_EQ_parentClass","${d.classCode}");
-            grid.setAjaxParam("search_OR_classCode|className",value);
-            grid.getDataTable().fnDraw();
-        }
-        function goView(id){
-            document.location="${rc.contextPath}/product/class/view/"+id+"/${d.classCode}";
-        }
-        function subView(code){
-            document.location="${rc.contextPath}/product/class/sub-view/"+code;
         }
     </script>
 </content>

@@ -3,6 +3,8 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletRequest;
 
+import com.google.common.collect.Lists;
+import com.kingnode.diva.mapper.JsonMapper;
 import com.kingnode.diva.web.Servlets;
 import com.kingnode.gou.entity.ProductCatalog;
 import com.kingnode.gou.entity.ProductCatalogAttr;
@@ -195,5 +197,25 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
             log.info("删除数据异常！",e);
         }
         return "{\"result\":\""+result+"\"}";
+    }
+
+    @RequestMapping(value="get-catalog-attr/{id}/{productId}", method=RequestMethod.POST) @ResponseBody public String getCatalogAttr(@PathVariable("id") Long id,@PathVariable("productId") Long productId){
+        List<ProductCatalogAttr> attrs=Lists.newArrayList();
+        if(productId==0){
+            attrs=catalogService.listProductCatalogAttrByCatalogId(id);
+        }else{
+            attrs=catalogService.listProductCatalogAttrByCatalogId(id,productId,"1");
+        }
+        return JsonMapper.nonDefaultMapper().toJson(attrs);
+    }
+
+    @RequestMapping(value="get-catalog-attr-sub/{id}/{productSubId}", method=RequestMethod.POST) @ResponseBody public String getCatalogAttrSub(@PathVariable("id") Long id,@PathVariable("productSubId") Long productSubId){
+        List<ProductCatalogAttr> attrs=Lists.newArrayList();
+        if(productSubId==0){
+            attrs=catalogService.listProductCatalogAttrByCatalogId(id);
+        }else{
+            attrs=catalogService.listProductCatalogAttrByCatalogId(id,productSubId,"2");
+        }
+        return JsonMapper.nonDefaultMapper().toJson(attrs);
     }
 }
