@@ -1,5 +1,7 @@
 package com.kingnode.gou.entity;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import com.kingnode.xsimple.entity.AuditEntity;
@@ -10,7 +12,7 @@ import com.kingnode.xsimple.entity.AuditEntity;
 public class Position extends AuditEntity{
     private String code;
     private String name;
-    private PositionType type;
+    private PositionType type=PositionType.pc;
     private double width;
     private double height;
     public String getCode(){
@@ -25,6 +27,7 @@ public class Position extends AuditEntity{
     public void setName(String name){
         this.name=name;
     }
+    @Enumerated(EnumType.STRING)
     public PositionType getType(){
         return type;
     }

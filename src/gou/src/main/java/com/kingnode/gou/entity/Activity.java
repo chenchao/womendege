@@ -1,8 +1,11 @@
 package com.kingnode.gou.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.sound.midi.Sequence;
 import javax.validation.constraints.NotNull;
 
 import com.kingnode.xsimple.entity.AuditEntity;
@@ -15,7 +18,7 @@ import com.kingnode.xsimple.util.dete.DateUtil;
     private String activityCode; //特卖类型
     private Double discount;    //折扣
     private int pri;
-    private ActivityState state;
+    private ActivityState state=ActivityState.ready;
     @NotNull @Column(length=200) public String getName(){
         return name;
     }
@@ -58,6 +61,7 @@ import com.kingnode.xsimple.util.dete.DateUtil;
     public void setPri(int pri){
         this.pri=pri;
     }
+    @Enumerated(EnumType.STRING)
     public ActivityState getState(){
         return state;
     }

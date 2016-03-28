@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletRequest;
 
-import com.google.common.collect.Lists;
 import com.kingnode.diva.mapper.JsonMapper;
 import com.kingnode.diva.web.Servlets;
 import com.kingnode.gou.entity.Product;
@@ -13,7 +12,6 @@ import com.kingnode.gou.entity.ProductCatalogAttr;
 import com.kingnode.gou.entity.ProductClass;
 import com.kingnode.gou.entity.ProductDetail;
 import com.kingnode.gou.entity.ProductPicture;
-import com.kingnode.gou.service.ProductBaseService;
 import com.kingnode.gou.service.ProductBrandService;
 import com.kingnode.gou.service.ProductCatalogService;
 import com.kingnode.gou.service.ProductClassService;
@@ -72,11 +70,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
      */
     @RequestMapping(value="create", method=RequestMethod.POST)
     public String create(Product product,String[] fileAddress,Long[] catalogAttrId,String[] catalogAttrVal){
+        boolean isNew=(product.getId()==null||product.getId()<=0);
         //数据项去空格
         product.setProductCode(product.getProductCode().trim());
         product.setProductName(product.getProductName().trim());
         if(StringUtils.isNotBlank(product.getProductShortName())){
             product.setProductShortName(product.getProductShortName().trim());
+        }
+        if(product.getIfSub()==null){
+            product.setIfSub(1);
         }
         detailService.saveProduct(product);
         //删除并保存附件
@@ -88,6 +90,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
         detailService.deleteProductCatalogAttrVal("1",product.getId(),product.getCatalogId());
         if(catalogAttrId!=null&&catalogAttrId.length>0){
             detailService.saveProductCatalogAttrVal(catalogAttrId,catalogAttrVal,product.getId(),product.getCatalogId(),"1");
+        }
+        if(isNew&&product.getIfSub()==1){
+            return "redirect:/product/detail/create-sub/"+product.getId();
         }
         return "redirect:/product/detail/sub-view/"+product.getId();
     }
@@ -115,6 +120,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
         model.addAttribute("productId",product.getId());
         model.addAttribute("productCode",product.getProductCode());
         model.addAttribute("productName",product.getProductName());
+        model.addAttribute("ifSub",product.getIfSub()==null?1:product.getIfSub());
         return "product/detailForm";
     }
     @RequestMapping(value="create-sub", method=RequestMethod.POST)
@@ -146,6 +152,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
         model.addAttribute("productName",product.getProductName());
         ProductCatalog catalog=detailService.readProductCatalog(detail.getCatalogId()!=null?detail.getCatalogId():0);
         model.addAttribute("catalogName",catalog!=null?catalog.getCatalogName():"");
+        model.addAttribute("ifSub",product.getIfSub()==null?1:product.getIfSub());
         return "product/detailForm";
     }
     @RequestMapping(value="sub-view/{id}") public String subViewForm(@PathVariable("id") Long id,Model model){
@@ -163,16 +170,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
         List<ProductDetail> details=detailService.listProductDetail(product.getId());
         if(details!=null&&details.size()>0){
             for(ProductDetail detail:details){
-                if(detail.getCatalogId()==null||detail.getCatalogId()<=0){
-                    continue;
+                if(detail.getCatalogId()!=null&&detail.getCatalogId()>0){
+                    ProductCatalog subCatalog=detailService.readProductCatalog(detail.getCatalogId());
+                    detail.setCatalogName(subCatalog!=null?subCatalog.getCatalogName():"无");
+                    detail.setSubAttrs(catalogService.listProductCatalogAttrByCatalogId(detail.getCatalogId(),detail.getId(),"2"));
                 }
-                ProductCatalog subCatalog=detailService.readProductCatalog(detail.getCatalogId());
-                detail.setCatalogName(subCatalog!=null?subCatalog.getCatalogName():"无");
-                detail.setSubAttrs(catalogService.listProductCatalogAttrByCatalogId(detail.getCatalogId(),detail.getId(),"2"));
                 detail.setPictures(detailService.listProductPicture(detail.getId(),"2"));
             }
         }
         model.addAttribute("details",details);
+        Integer addDetailFlag=1;
+        if(product.getIfSub()==1&&details!=null&&details.size()>0){
+            addDetailFlag=0;
+        }
+        model.addAttribute("addDetailFlag",addDetailFlag);
         return "product/productView";
     }
     @RequestMapping(value="checkDataExists") @ResponseBody public String checkDictionaryExists(ServletRequest request){

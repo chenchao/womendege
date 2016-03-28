@@ -40,13 +40,13 @@ import org.springframework.transaction.annotation.Transactional;
     public Activity readActivity(long id){
         return activityDao.findOne(id);
     }
-    public void saveActivity(Activity activity){
+    public Activity saveActivity(Activity activity){
         if(activity.getId()!=null){
             Activity old=activityDao.findOne(activity.getId());
             activity.setCreateId(old.getCreateId());
             activity.setCreateTime(old.getCreateTime());
         }
-        activityDao.save(activity);
+        return activityDao.save(activity);
     }
     public void deleteActivity(long id){
         Activity activity=activityDao.findOne(id);
@@ -127,8 +127,8 @@ import org.springframework.transaction.annotation.Transactional;
         return dt;
     }
 
-    public DataTable<ActivityProductView> PageActivityProducts(Long activityId,final Map<String,Object> searchParams,DataTable<ActivityProductView> dt){
-        PageRequest pageRequest=new PageRequest(dt.pageNo(),dt.getiDisplayLength(),new Sort(Sort.Direction.DESC,"id"));
+    public DataTable<ActivityProductView> PageActivityProducts(final Long activityId,final Map<String,Object> searchParams,DataTable<ActivityProductView> dt){
+        PageRequest pageRequest=new PageRequest(dt.pageNo(),dt.getiDisplayLength());
         Specification<ActivityProductView> spec=new Specification<ActivityProductView>(){
             @Override public Predicate toPredicate(Root<ActivityProductView> root,CriteriaQuery<?> cq,CriteriaBuilder cb){
                 List<Predicate> predicates=Lists.newArrayList();
@@ -142,6 +142,7 @@ import org.springframework.transaction.annotation.Transactional;
                     predicates.add(cb.equal(root.<String>get("state"),searchParams.get("state")));
                 }
                 predicates.add(cb.notEqual(root.<String>get("state"),Activity.ActivityState.delete));
+                predicates.add(cb.equal(root.<ActivityProduct>get("apId").<Long>get("activityId"),activityId));
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         };

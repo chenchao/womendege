@@ -20,11 +20,11 @@
                 <i class="fa fa-angle-right"></i>
             </li>
             <li>
-                <a href="${rc.contextPath}/product/detail/sub-view/${productId}">商品详情</a>
+                <a href="${rc.contextPath}/product/detail/sub-view/${productId}">子商品</a>
                 <i class="fa fa-angle-right"></i>
             </li>
             <li>
-                <a href="#"><#if action?? && action =='create'>创建<#elseif action=='view'>查看<#else>修改</#if>商品详情</a>
+                <a href="#"><#if action?? && action =='create'>创建<#elseif action=='view'>查看<#else>修改</#if>子商品</a>
                 <i class="fa fa-angle-right"></i>
             </li>
         </ul>
@@ -46,40 +46,44 @@
                     <input type="hidden" id="removeTag" name="removeTag" value="${d.removeTag}">
                     <div class="form-body">
                         <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情信息</label>
+                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">子商品信息</label>
                         </div>
                         <div class="form-group">
                             <label class="col-md-2 control-label">商品编码</label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" readonly placeholder="" id="productCode" name="productCode" value="${productCode}">
                             </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-md-2 control-label">商品名称</label>
-                            <div class="col-md-4">
+                            <div class="col-md-10">
                                 <input type="text" class="form-control" readonly placeholder="" id="productName" name="productName" value="${productName}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-md-2 control-label">详情编码<span class="required">*</span></label>
+                            <label class="col-md-2 control-label">子商品编码<span class="required">*</span></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" placeholder="" id="productSubCode" name="productSubCode" value="${d.productSubCode}">
                             </div>
-                            <label class="col-md-2 control-label">详情名称<span class="required">*</span></label>
-                            <div class="col-md-4">
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">子商品名称<span class="required">*</span></label>
+                            <div class="col-md-10">
                                 <input type="text" class="form-control" id="productSubName" name="productSubName" placeholder="" value="${d.productSubName}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-md-2 control-label">详情单位<span class="required">*</span></label>
+                            <label class="col-md-2 control-label">子商品单位<span class="required">*</span></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" placeholder="" id="productUnit" name="productUnit" value="${d.productUnit}">
                             </div>
-                            <label class="col-md-2 control-label">详情单价<span class="required">*</span></label>
+                            <label class="col-md-2 control-label">子商品单价<span class="required">*</span></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" id="productPrice" name="productPrice" placeholder="" value="${d.productPrice}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-md-2 control-label">详情库存<span class="required">*</span></label>
+                            <label class="col-md-2 control-label">子商品库存<span class="required">*</span></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" placeholder="" id="productStock" name="productStock" value="${d.productStock}">
                             </div>
@@ -94,7 +98,7 @@
                         <div class="form-group">
                             <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">规格属性
                                 <span id="selectCatalog" class="btn btn-success fileinput-button input-group-btn" style="width:100px;display: inline-block;margin-bottom: 5px;margin-left: 15px;">
-                                    <span>选择商品规格</span>
+                                    <span>选择子商品规格</span>
                                 </span>
                                 <font color="blue" style="font-size: small;" id="catalogName">规格名称</font>
                                 <input type="hidden" class="form-control" id="catalogId" name="catalogId" value="${d.catalogId}">
@@ -102,7 +106,7 @@
                         </div>
                         <div id="catalogAttrList"></div>
                         <div class="form-group">
-                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">详情图片
+                            <label class="col-md-12 control-label"  style="text-align: left;font-weight: bold;font-size: 16px;">子商品图片
                                 <span id="spanDocId" class="btn btn-success fileinput-button input-group-btn" style="width:100px;display: inline-block;margin-bottom: 5px;margin-left: 15px;">
                                     <span>上传附件</span><input id="fileupload" type="file" name="files" multiple style="width:100px;display: inline-block">
                                 </span>
@@ -184,6 +188,13 @@ $(document).ready(function(){
         openEffect	: 'none',
         closeEffect	: 'none'
     });
+    var ifSub='${ifSub}';
+    if(ifSub=='1'){
+        $("#productSubCode").val($("#productCode").val());
+        $("#productSubCode").attr("readonly","readonly");
+        $("#productSubName").val($("#productName").val());
+        $("#productSubName").attr("readonly","readonly");
+    }
 <#if action?? && action != 'view'>
     $("#selectCatalog").bind("click",function(){
         $("#catalog-modal").modal("show");
@@ -366,22 +377,22 @@ function saveInfo(){
 function validation(){
     var productSubCode=$("#productSubCode").val();
     if($.trim(productSubCode).length==0){
-        bootbox.alert("请输入详情编码!");
+        bootbox.alert("请输入子商品编码!");
         return false;
     }
     var productSubName=$("#productSubName").val();
     if($.trim(productSubName).length==0){
-        bootbox.alert("请输入详情名称!");
+        bootbox.alert("请输入子商品名称!");
         return false;
     }
     var productUnit=$("#productUnit").val();
     if($.trim(productUnit).length==0){
-        bootbox.alert("请选择详情单位!");
+        bootbox.alert("请选择子商品单位!");
         return false;
     }
     var productPrice=$("#productPrice").val();
     if($.trim(productPrice).length==0){
-        bootbox.alert("请输入详情单价!");
+        bootbox.alert("请输入子商品单价!");
         return false;
     }
     if(isNaN($.trim(productPrice))){
@@ -390,7 +401,7 @@ function validation(){
     }
     var productStock=$("#productStock").val();
     if($.trim(productStock).length==0){
-        bootbox.alert("请输入详情库存!");
+        bootbox.alert("请输入子商品库存!");
         return false;
     }
     if(isNaN($.trim(productStock))){
@@ -418,7 +429,7 @@ function checkCodeExists(code){
         async:false,
         success:function(data){
             if(data.result=="exists"){
-                bootbox.alert("详情编码["+code+"]已存在，请重新输入！");
+                bootbox.alert("子商品编码["+code+"]已存在，请重新输入！");
                 b=false;
             }
         }
@@ -437,7 +448,7 @@ function checkNameExists(name){
         async:false,
         success:function(data){
             if(data.result=="exists"){
-                bootbox.alert("详情名称["+name+"]已存在，请重新输入！");
+                bootbox.alert("子商品名称["+name+"]已存在，请重新输入！");
                 b=false;
             }
         }

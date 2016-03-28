@@ -17,6 +17,7 @@ import javax.persistence.Transient;
     private String productDesc;//商品描述
     private String brandName;//品牌名称
     private String fullClassName;//分类名称
+    private Integer ifSub;//是否子商品
     public Long getCatalogId(){
         return catalogId;
     }
@@ -60,6 +61,12 @@ import javax.persistence.Transient;
     }
     public void setProductDesc(String productDesc){
         this.productDesc=productDesc;
+    }
+    public Integer getIfSub(){
+        return ifSub;
+    }
+    public void setIfSub(Integer ifSub){
+        this.ifSub=ifSub;
     }
     @Transient
     public String getBrandName(){
