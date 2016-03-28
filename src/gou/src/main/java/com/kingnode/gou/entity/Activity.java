@@ -5,7 +5,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.sound.midi.Sequence;
 import javax.validation.constraints.NotNull;
 
 import com.kingnode.xsimple.entity.AuditEntity;

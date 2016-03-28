@@ -74,10 +74,11 @@
                             <th width="20%">操作</th>
                         </tr>
                         <tr role="row" class="filter">
-                            <td></td>
                             <td>
-                                <input type="text" class="form-control form-filter input-sm" name="search_LIKE_counts" value="">
+                                <input type="text" class="form-control form-filter input-sm" name="search_LIKE_orderHeadNo" value="">
                             </td>
+                            <td></td>
+
                             <td></td>
                             <td>
                                 <#--<select name="search_LIKE_isTop" class="form-control form-filter input-sm">-->
@@ -161,12 +162,22 @@
                         return data;
                     }},
                     {  "sTitle":"支付状态","mData":"status","mRender":function(data,type,row){
-                        if(data == 'daifahuo'){
-                            return "待发货";
+                        if(data=='daifahuo'){
+                            return "待发货"
+                        }
+                        else if(data=='daifukuan'){
+                            return "待付款"
+                        }
+                        else if(data=='daipingjia'){
+                            return "待评价"
+                        }
+                        else if(data=='wancheng'){
+                            return "退货完成"
                         }
                     }},
-                    { "sTitle":"交易时间","mData":"createTime","mRender":function(data,type,row){
-                        return getYmd(changeDate(parseFloat(data)));
+                    { "sTitle":"交易时间","mData":"createTimeStr","mRender":function(data,type,row){
+//                        return getYmd(changeDate(parseFloat(data)));
+                        return data;
                     }},
                     {  "sTitle":"当前收货人","mData":"userName","mRender":function(data,type,row){
                         return data;

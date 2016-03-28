@@ -270,6 +270,9 @@ public class OrderService{
         Specification<OrderReturnDetail> spec=new Specification<OrderReturnDetail>(){
             @Override public Predicate toPredicate(Root<OrderReturnDetail> root,CriteriaQuery<?> cq,CriteriaBuilder cb){
                 List<Predicate> predicates=Lists.newArrayList();
+                if(searchParams.get("LIKE_orderNo")!=null && !"".equals(searchParams.get("LIKE_orderNo")) ){
+                    predicates.add(cb.like(root.<String>get("orderReturnNo"),"%"+searchParams.get("LIKE_orderNo").toString()+"%"));
+                }
                 if(searchParams.get("LIKE_orderHeadId")!=null && !"".equals(searchParams.get("LIKE_orderHeadId")) ){
                     predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("id"),Long.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
                 }
@@ -281,6 +284,12 @@ public class OrderService{
                 }
                 if(searchParams.get("title")!=null && !"".equals(searchParams.get("title")) ){
                     predicates.add(cb.like(root.<String>get("title"),searchParams.get("title").toString()));
+                }
+                if(searchParams.get("LIKE_startTime")!=null && !"".equals(searchParams.get("LIKE_startTime"))){
+                    predicates.add(cb.ge(root.<Long>get("createTime"),new DateTime(searchParams.get("LIKE_startTime").toString()).getMillis()));
+                }
+                if(searchParams.get("LIKE_endTime")!=null && !"".equals(searchParams.get("LIKE_endTime"))){
+                    predicates.add(cb.le(root.<Long>get("createTime"),new DateTime(searchParams.get("LIKE_endTime").toString()).getMillis()));
                 }
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
             }
@@ -339,6 +348,10 @@ public class OrderService{
                 List<Predicate> predicates=Lists.newArrayList();
                 if(searchParams.get("LIKE_counts")!=null && !"".equals(searchParams.get("LIKE_counts")) ){
                     predicates.add(cb.ge(root.<Integer>get("counts"),Integer.parseInt(searchParams.get("LIKE_counts").toString())));
+                }
+
+                if(searchParams.get("LIKE_orderHeadNo")!=null && !"".equals(searchParams.get("LIKE_orderHeadNo"))){
+                    predicates.add(cb.like(root.<String>get("orderHeadNo"),"%"+searchParams.get("LIKE_orderHeadNo").toString()+"%"));
                 }
 
                 if(searchParams.get("title")!=null && !"".equals(searchParams.get("title")) ){

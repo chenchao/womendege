@@ -152,17 +152,18 @@
                     { "sTitle":"退货编号","mData":"orderReturnNo","mRender":function(data,type,row){
                         return data;
                     }},
-                    {  "sTitle":"商品数量","mData":"orderDetail.","mRender":function(data,type,row){
+                    {  "sTitle":"商品数量","mData":"orderDetail.quatity","mRender":function(data,type,row){
                         return data;
                     }},
                     {  "sTitle":"交易金额","mData":"money","mRender":function(data,type,row){
                         return data;
                     }},
 
-                    { "sTitle":"退货时间","mData":"createTime","mRender":function(data,type,row){
-                        return getYmd(changeDate(parseFloat(data)));
+                    { "sTitle":"退货时间","mData":"createTimeStr","mRender":function(data,type,row){
+//                        return getYmd(changeDate(parseFloat(data)));
+                        return data;
                     }},
-                    {  "sTitle":"退货理由","mData":"userName","mRender":function(data,type,row){
+                    {  "sTitle":"退货理由","mData":"reson","mRender":function(data,type,row){
                         return data;
                     }},
                     {  "sTitle":"退货状态","mData":"status","mRender":function(data,type,row){
