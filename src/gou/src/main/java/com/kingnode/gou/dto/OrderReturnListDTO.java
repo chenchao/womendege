@@ -2,6 +2,7 @@ package com.kingnode.gou.dto;
 import java.math.BigDecimal;
 
 import com.kingnode.gou.entity.OrderHead;
+import com.kingnode.gou.entity.OrderReturnDetail;
 
 /**
  * @author 58120775@qq.com (chenchao)
@@ -14,6 +15,7 @@ public class OrderReturnListDTO{
     private BigDecimal orgPrice;//原始价格
     private Integer quatity;//数量
     private OrderHead.OrderStatus status;//订单状态，未付款，代发货，已发货，退货
+    private OrderReturnDetail.ReturnStatus returnStatus;//退回状态
     private String imgPath;//商品图片
     private String productName;//商品名称
     private String guige;//规格
@@ -70,5 +72,11 @@ public class OrderReturnListDTO{
     }
     public void setQuatity(Integer quatity){
         this.quatity=quatity;
+    }
+    public OrderReturnDetail.ReturnStatus getReturnStatus(){
+        return returnStatus;
+    }
+    public void setReturnStatus(OrderReturnDetail.ReturnStatus returnStatus){
+        this.returnStatus=returnStatus;
     }
 }

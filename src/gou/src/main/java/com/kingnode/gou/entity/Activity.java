@@ -92,4 +92,7 @@ import com.kingnode.xsimple.util.dete.DateUtil;
     public String getStartTimeStr(){
         return DateUtil.getDate(startTime);
     }
+
+
+
 }

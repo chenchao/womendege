@@ -18,6 +18,7 @@ import com.kingnode.gou.entity.OrderPay;
 import com.kingnode.gou.entity.OrderReturnDetail;
 import com.kingnode.gou.entity.ShoppCart;
 import com.kingnode.gou.entity.ShoppComment;
+import com.kingnode.gou.entity.ViewProductInfo;
 import com.kingnode.gou.service.OrderService;
 import com.kingnode.xsimple.rest.DetailDTO;
 import com.kingnode.xsimple.rest.ListDTO;
@@ -58,6 +59,7 @@ public class OrderRestController{
             try{
                 i = orderService.orderSubmit(dto);
             }catch(Exception e){
+                e.printStackTrace();
                 logger.info("e:{}",e);
             }
         }
@@ -77,10 +79,10 @@ public class OrderRestController{
      */
     @RequestMapping(value="/order/detail/list",method={RequestMethod.GET})
     public ListDTO<OrderReturnListDTO> queryOrders(@RequestParam(value="p",defaultValue = "0") Integer pageNo,@RequestParam(value="s",defaultValue = "10") Integer pageSize,
-            @RequestParam(value="status") String  status){
+            @RequestParam(value="status",defaultValue = "") String  status){
         Map params = new HashMap();
         params.put("LIKE_status",StringUtils.isNotEmpty(status)?OrderHead.OrderStatus.valueOf(status):"");
-        params.put("LIKE_userId",Users.id());
+        params.put("LIKE_userId",Users.id()+"");
         if(Users.id() == null || Users.id()==0l){
             logger.error("接口：/order/detail/list，请先登录");
             return null;
@@ -95,9 +97,11 @@ public class OrderRestController{
                 OrderReturnListDTO dto=BeanMapper.map(detail,OrderReturnListDTO.class);
                 dto.setOrderNo(detail.getOrderNo());
                 dto.setStatus(detail.getOrderHead().getStatus());
-                dto.setImgPath("");
-                dto.setProductName("");
+                ViewProductInfo productInfo = orderService.findProductInfo(detail.getProductId());
+                dto.setImgPath(productInfo!=null?productInfo.getProductImg():"");
+                dto.setProductName(productInfo!=null?productInfo.getProductName():"");
                 dto.setGuige(detail.getGuige());
+                dto.setQuatity(detail.getQuatity());
                 dtos.add(dto);
             }
         }
@@ -114,7 +118,7 @@ public class OrderRestController{
     public ListDTO<OrderReturnListDTO> queryOrdersReturns(@RequestParam(value="p",defaultValue = "0") Integer pageNo,@RequestParam(value="s",defaultValue = "10") Integer pageSize
             ){
         Map params = new HashMap();
-        params.put("LIKE_userId",Users.id());
+        params.put("LIKE_userId",Users.id()+"");
         if(Users.id() == null || Users.id()==0l){
             logger.error("接口：/order/detail/list，请先登录");
             return null;
@@ -126,12 +130,16 @@ public class OrderRestController{
         if(orderDetails!=null&&orderDetails.size()>0){
             int count=0;
             for(OrderReturnDetail detail : orderDetails){
-                OrderReturnListDTO dto=BeanMapper.map(detail,OrderReturnListDTO.class);
-                dto.setOrderNo(detail.getOrderDetail().getOrderNo());
+                OrderReturnListDTO dto=new OrderReturnListDTO();
+                dto.setOrderNo(detail.getOrderReturnNo());
                 dto.setStatus(detail.getOrderDetail().getOrderHead().getStatus());
-                dto.setImgPath("");
-                dto.setProductName("");
+                ViewProductInfo productInfo = orderService.findProductInfo(detail.getOrderDetail().getProductId());
+                dto.setImgPath(productInfo!=null?productInfo.getProductImg():"");
+                dto.setProductName(productInfo!=null?productInfo.getProductName():"");
                 dto.setGuige(detail.getOrderDetail().getGuige());
+                dto.setPrice(detail.getOrderDetail().getPrice());
+                dto.setQuatity(detail.getOrderDetail().getQuatity());
+                dto.setReturnStatus(detail.getStatus());
                 dtos.add(dto);
             }
         }
@@ -160,11 +168,15 @@ public class OrderRestController{
         if(orderDetails!=null&&orderDetails.size()>0){
             int count=0;
             for(ShoppCart detail : orderDetails){
-                OrderReturnListDTO dto=BeanMapper.map(detail,OrderReturnListDTO.class);
-                dto.setImgPath("123456");
+                OrderReturnListDTO dto=new OrderReturnListDTO();
                 dto.setProductId(detail.getProductId());
-                dto.setProductName("我是测试");
-                dto.setPrice(BigDecimal.ZERO);
+                dto.setQuatity(detail.getQuatity());
+                dto.setProductId(detail.getProductId());
+                ViewProductInfo productInfo = orderService.findProductInfo(detail.getProductId());
+                dto.setImgPath(productInfo!=null?productInfo.getProductImg():"");
+                dto.setProductName(productInfo!=null?productInfo.getProductName():"");
+                dto.setPrice(productInfo!=null?productInfo.getPrice():BigDecimal.ZERO);
+                dto.setQuatity(detail.getQuatity());
                 dtos.add(dto);
             }
         }
@@ -199,7 +211,7 @@ public class OrderRestController{
     //申请退货
     @RequestMapping(value="/order/return", method={RequestMethod.POST})
     public DetailDTO returnOrder(@RequestParam(value="orderNo") String orderDetailNo,@RequestParam(value="reason") String reason,@RequestParam
-            (value="remark")String remark,@RequestParam(value="img1") String img1,@RequestParam(value="img2") String img2,@RequestParam(value="img3") String img3){
+            (value="remark")String remark,@RequestParam(value="img1",defaultValue = "") String img1,@RequestParam(value="img2",defaultValue = "") String img2,@RequestParam(value="img3",defaultValue = "") String img3){
         if(Users.id() == null || Users.id()==0l){
             logger.error("接口：/order/submit，请先登录");
             return null;

@@ -23,6 +23,7 @@ import com.kingnode.gou.dao.OrderPayDao;
 import com.kingnode.gou.dao.OrderReturnDetailDao;
 import com.kingnode.gou.dao.ShoppCartDao;
 import com.kingnode.gou.dao.ShoppCommentDao;
+import com.kingnode.gou.dao.ViewProductInfoDao;
 import com.kingnode.gou.dto.OrderProductDTO;
 import com.kingnode.gou.dto.OrderSubmitDTO;
 import com.kingnode.gou.dto.ShoppCartDTO;
@@ -35,6 +36,7 @@ import com.kingnode.gou.entity.OrderReturnDetail;
 import com.kingnode.gou.entity.ShoppCart;
 import com.kingnode.gou.entity.ShoppComment;
 import com.kingnode.gou.entity.ShoppCommentImg;
+import com.kingnode.gou.entity.ViewProductInfo;
 import com.kingnode.xsimple.api.common.DataTable;
 import com.kingnode.xsimple.entity.IdEntity;
 import com.kingnode.xsimple.util.Users;
@@ -68,6 +70,8 @@ public class OrderService{
     private OrderPayDao orderPayDao;
     @Autowired
     private OrderReturnDetailDao orderReturnDetailDao;
+    @Autowired
+    private ViewProductInfoDao viewProductInfoDao;
 
 
     /**
@@ -157,17 +161,19 @@ public class OrderService{
      * @param img3
      * @return 1申请退款成功 ， 2已过申请退款时间
      */
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public int OrderReturn(String orderDetailNo,String reson,String remark,String img1,String img2,String img3){
         //先判断no是否在合适的状态
         OrderDetail detail = orderDetailDao.findByOrderNo(orderDetailNo);
-        if(detail != null && isInNormalTime(detail.getCreateTime())){
+//        if(detail != null && isInNormalTime(detail.getCreateTime())){
+        if(detail != null ){
             //往退款表中插入记录
             OrderReturnDetail returnDetail = new OrderReturnDetail();
             returnDetail.setMoney(detail.getPrice().multiply(new BigDecimal(detail.getQuatity()+"")));
             returnDetail.setImg1(img1);
             returnDetail.setImg2(img2);
             returnDetail.setImg3(img3);
+            returnDetail.setReson(reson);
             returnDetail.setOrderReturnNo("R"+detail.getOrderNo());
             returnDetail.setOrderDetail(detail);
             returnDetail.setStatus(OrderReturnDetail.ReturnStatus.daishenhe);
@@ -260,25 +266,25 @@ public class OrderService{
     public Page<OrderReturnDetail> PageOrderReturn(final Map<String,Object> searchParams,int pageNumber,int pageSize){
         PageRequest pageRequest=new PageRequest(pageNumber,pageSize,new Sort(Sort.Direction.DESC,"id"));
         Map<String,SearchFilter> filters=SearchFilter.parse(searchParams);
-        Specification<OrderReturnDetail> spec=DynamicSpecifications.bySearchFilter(filters.values());
-//        Specification<OrderReturnDetail> spec=new Specification<OrderReturnDetail>(){
-//            @Override public Predicate toPredicate(Root<OrderReturnDetail> root,CriteriaQuery<?> cq,CriteriaBuilder cb){
-//                List<Predicate> predicates=Lists.newArrayList();
-//                if(searchParams.get("LIKE_orderHeadId")!=null && !"".equals(searchParams.get("LIKE_orderHeadId")) ){
-//                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("id"),Long.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
-//                }
-//                if(searchParams.get("LIKE_status")!=null && !"".equals(searchParams.get("LIKE_status")) ){
-//                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("status"),OrderHead.OrderStatus.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
-//                }
-//                if(searchParams.get("LIKE_userId")!=null && !"".equals(searchParams.get("LIKE_userId")) &&  Long.valueOf(searchParams.get("LIKE_userId").toString())>0 ){
-//                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("userId"),Long.valueOf(searchParams.get("LIKE_userId").toString())));
-//                }
-//                if(searchParams.get("title")!=null && !"".equals(searchParams.get("title")) ){
-//                    predicates.add(cb.like(root.<String>get("title"),searchParams.get("title").toString()));
-//                }
-//                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
-//            }
-//        };
+//        Specification<OrderReturnDetail> spec=DynamicSpecifications.bySearchFilter(filters.values());
+        Specification<OrderReturnDetail> spec=new Specification<OrderReturnDetail>(){
+            @Override public Predicate toPredicate(Root<OrderReturnDetail> root,CriteriaQuery<?> cq,CriteriaBuilder cb){
+                List<Predicate> predicates=Lists.newArrayList();
+                if(searchParams.get("LIKE_orderHeadId")!=null && !"".equals(searchParams.get("LIKE_orderHeadId")) ){
+                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("id"),Long.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
+                }
+                if(searchParams.get("LIKE_status")!=null && !"".equals(searchParams.get("LIKE_status")) ){
+                    predicates.add(cb.equal(root.<OrderHead>get("orderHead").<Long>get("status"),OrderHead.OrderStatus.valueOf(searchParams.get("LIKE_orderHeadId").toString())));
+                }
+                if(searchParams.get("LIKE_userId")!=null && !"".equals(searchParams.get("LIKE_userId")) &&  Long.valueOf(searchParams.get("LIKE_userId").toString())>0 ){
+                    predicates.add(cb.equal(root.<OrderDetail>get("orderDetail").<OrderHead>get("orderHead").<Long>get("userId"),Long.valueOf(searchParams.get("LIKE_userId").toString())));
+                }
+                if(searchParams.get("title")!=null && !"".equals(searchParams.get("title")) ){
+                    predicates.add(cb.like(root.<String>get("title"),searchParams.get("title").toString()));
+                }
+                return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+            }
+        };
         return orderReturnDetailDao.findAll(spec,pageRequest);
     }
 
@@ -353,6 +359,16 @@ public class OrderService{
     }
 
     /**
+     * 查询产品视图
+     * @param productId
+     * @return
+     */
+    public ViewProductInfo findProductInfo(Long productId){
+        ViewProductInfo viewProductInfo = viewProductInfoDao.findByProductId(productId);
+        return viewProductInfo;
+    }
+
+    /**
      * 提交订单
      * @param dto
      * @return
@@ -371,31 +387,34 @@ public class OrderService{
 
             int count= 0;
             BigDecimal totalMoney = BigDecimal.ZERO;
-            //生成订单详细表
-            for(OrderProductDTO pid : dto.getProductDTOs()){
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setOrderHead(head);
-                String orderDetailNo = getOrderDetailNo(Users.id()+"");
-                //TODO:获取商品信息
-                BigDecimal orgPrice = BigDecimal.ZERO;
-                BigDecimal price = BigDecimal.ZERO;
-                for(;;){
-                    //查询这个订单号是否已经存在
-                    OrderDetail  details = orderDetailDao.findByOrderNo(orderDetailNo);
-                    if(details != null){
-                        orderDetailNo = getOrderDetailNo(Users.id()+"");
-                    }else{
-                        break;
+            if(dto.getProductDTOs() != null){
+                //生成订单详细表
+                for(OrderProductDTO pid : dto.getProductDTOs()){
+                    OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.setOrderHead(head);
+                    String orderDetailNo = getOrderDetailNo(Users.id()+"");
+                    //TODO:获取商品信息
+                    ViewProductInfo productInfo = this.findProductInfo(pid.getProductId());
+                    BigDecimal orgPrice = productInfo!=null?productInfo.getOrgPrice():BigDecimal.ZERO;
+                    BigDecimal price = productInfo!=null?productInfo.getPrice():BigDecimal.ZERO;
+                    for(;;){
+                        //查询这个订单号是否已经存在
+                        OrderDetail  details = orderDetailDao.findByOrderNo(orderDetailNo);
+                        if(details != null){
+                            orderDetailNo = getOrderDetailNo(Users.id()+"");
+                        }else{
+                            break;
+                        }
                     }
+                    count+=pid.getCount();
+                    totalMoney=totalMoney.add(price);
+                    orderDetail.setOrderNo(orderDetailNo);
+                    orderDetail.setOrgPrice(orgPrice);
+                    orderDetail.setPrice(price);
+                    orderDetail.setProductId(pid.getProductId());
+                    orderDetail.setQuatity(pid.getCount());
+                    orderDetailDao.save(orderDetail);
                 }
-                count+=pid.getCount();
-                totalMoney=totalMoney.add(price);
-                orderDetail.setOrderNo(orderDetailNo);
-                orderDetail.setOrgPrice(orgPrice);
-                orderDetail.setPrice(price);
-                orderDetail.setProductId(0l);
-                orderDetail.setQuatity(pid.getCount());
-                orderDetailDao.save(orderDetail);
             }
 
             //修改商品数量
@@ -680,7 +699,12 @@ public class OrderService{
         return null;
     }
 
-
+    public ViewProductInfoDao getViewProductInfoDao(){
+        return viewProductInfoDao;
+    }
+    public void setViewProductInfoDao(ViewProductInfoDao viewProductInfoDao){
+        this.viewProductInfoDao=viewProductInfoDao;
+    }
     public void setOrderDetailDao(OrderDetailDao orderDetailDao){
         this.orderDetailDao=orderDetailDao;
     }
@@ -718,4 +742,5 @@ public class OrderService{
     public void setShoppCommentDao(ShoppCommentDao shoppCommentDao){
         this.shoppCommentDao=shoppCommentDao;
     }
+
 }
