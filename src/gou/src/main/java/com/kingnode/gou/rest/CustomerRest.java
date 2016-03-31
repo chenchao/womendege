@@ -21,7 +21,6 @@ import com.kingnode.xsimple.util.MSM.SMSUtil;
 import com.kingnode.xsimple.util.Users;
 import com.kingnode.xsimple.util.message.SendPhoneMsg;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,7 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
         }
         return new RestStatus(true);
     }
-    @ResponseBody @RequestMapping(value="/address/delete", method={RequestMethod.POST}) public RestStatus deleteAddress(@RequestParam(value="id")long id){
+    @ResponseBody @RequestMapping(value="/address/delete", method={RequestMethod.POST}) public RestStatus deleteAddress(@RequestParam(value="id") long id){
         try{
             customerService.deleteAddress(id);
         }catch(Exception e){
@@ -64,7 +63,7 @@ import org.springframework.web.bind.annotation.RestController;
         return new RestStatus(true);
     }
     @ResponseBody @RequestMapping(value="/collection", method={RequestMethod.POST}) public RestStatus saveCollection(@RequestParam(value="productId") long productId){
-        customerService.saveCollection(productId,1);
+        customerService.saveCollection(productId,Users.id());
         return new RestStatus(true);
     }
     @ResponseBody @RequestMapping(value="/collection/products", method={RequestMethod.GET})
@@ -77,8 +76,7 @@ import org.springframework.web.bind.annotation.RestController;
         List<Footprint> list=customerService.getFootprints(Users.id(),pageNo,pageSize);
         return new ListDTO<>(true,list);
     }
-
-    @ResponseBody @RequestMapping(value="/register",method=RequestMethod.POST)
+    @ResponseBody @RequestMapping(value="/register", method=RequestMethod.POST)
     public RestStatus register(@RequestParam(value="loginName") String loginName,@RequestParam(value="authCode") String authCode,@RequestParam(value="password") String password){
         try{
             Customer c=customerService.readByPhone(loginName);
@@ -109,7 +107,7 @@ import org.springframework.web.bind.annotation.RestController;
         }
         return new DetailDTO(true);
     }
-    @ResponseBody @RequestMapping(value="/setPassword",method=RequestMethod.POST)
+    @ResponseBody @RequestMapping(value="/setPassword", method=RequestMethod.POST)
     public RestStatus setPassword(@RequestParam(value="loginName") String loginName,@RequestParam(value="authCode") String authCode,@RequestParam(value="newPassword") String newPassword){
         List<KnDownloadVersionInfo> list=knDownloadVersionInfoDao.findCode(loginName,authCode);
         if(list.isEmpty()){
@@ -126,8 +124,7 @@ import org.springframework.web.bind.annotation.RestController;
         }
         return new DetailDTO(true);
     }
-    @ResponseBody @RequestMapping(value="/auth-code",method=RequestMethod.GET)
-    public RestStatus sendAuthCode(@RequestParam(value="loginName") String loginName){
+    @ResponseBody @RequestMapping(value="/auth-code", method=RequestMethod.GET) public RestStatus sendAuthCode(@RequestParam(value="loginName") String loginName){
         try{
             Customer customer=customerService.readByPhone(loginName);
             if(customer!=null){
