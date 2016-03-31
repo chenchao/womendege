@@ -379,6 +379,15 @@ import org.springframework.transaction.annotation.Transactional;
         }
         return map;
     }
+    @Transactional(readOnly=false) public void ChangePwd(String loginName,String newPassword) throws Exception{
+        KnUser ku=userDao.findByLoginName(loginName);
+        if(ku==null){
+            throw new Exception("用户不存在");
+        }
+        ku.setPlainPassword(newPassword);
+        entryptPassword(ku);
+        userDao.save(ku);
+    }
     @Transactional(readOnly=false) public String DeleteKnUser(Long id){
         KnUser ku=ReadUser(id);
         ku.getRole().clear();

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
  *
 */
 public class SendPhoneMsg{
+    public static final int codeValid=10*60*1000;
     private static SendPhoneMsg sendPhoneMsg=null;
     private final Logger log=LoggerFactory.getLogger(SendPhoneMsg.class);
     private String f_sendMsgUrl=ReadPropfileUtil.getInstall().prop.getProperty("sendMsgUrl") ;// 短信发送接口的请求的url地址
@@ -36,6 +37,9 @@ public class SendPhoneMsg{
         return sendPhoneMsg;
     }
 
+    public boolean sendByPhoneNum(String phone,String code){
+        return sendByPhoneNum(phone,code,"","","","","");
+    }
     /**
      * 根据手机号和验证码信息发送短信信息
      * @param phone 手机号
@@ -75,6 +79,7 @@ public class SendPhoneMsg{
         }
         return flag;
     }
+
     /**
      *
      * 根据发送的地址和信息发送短信信息

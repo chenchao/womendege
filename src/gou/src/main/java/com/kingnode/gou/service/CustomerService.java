@@ -1,4 +1,5 @@
 package com.kingnode.gou.service;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -6,7 +7,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.kingnode.diva.security.utils.Digests;
+import com.kingnode.diva.utils.Encodes;
 import com.kingnode.gou.dao.AddressDao;
 import com.kingnode.gou.dao.CollectionDao;
 import com.kingnode.gou.dao.CustomerDao;
@@ -18,6 +22,10 @@ import com.kingnode.gou.entity.Customer;
 import com.kingnode.gou.entity.Footprint;
 import com.kingnode.gou.entity.ProductCatalog;
 import com.kingnode.xsimple.api.common.DataTable;
+import com.kingnode.xsimple.dao.system.KnUserDao;
+import com.kingnode.xsimple.entity.system.KnRole;
+import com.kingnode.xsimple.entity.system.KnUser;
+import com.kingnode.xsimple.service.system.ResourceService;
 import com.kingnode.xsimple.util.dete.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +41,16 @@ import org.springframework.transaction.annotation.Transactional;
     @Autowired private AddressDao addressDao;
     @Autowired private CollectionDao collectionDao;
     @Autowired private FootprintDao footprintDao;
+    @Autowired private KnUserDao userDao;
     public Customer readCustomer(long id){
         return customerDao.findOne(id);
+    }
+    public Customer readByPhone(String phone){
+        List<Customer> customers=customerDao.findCustomerByPhone(phone);
+        if(!customers.isEmpty()){
+            return customers.get(0);
+        }
+        return null;
     }
     public void updateInfo(long customerId,String babyBirthday,String babySex,String nickName){
         Customer customer=customerDao.findOne(customerId);
@@ -104,5 +120,18 @@ import org.springframework.transaction.annotation.Transactional;
         dt.setiTotalDisplayRecords(page.getTotalElements());
         dt.setAaData(page.getContent());
         return dt;
+    }
+    public void register(KnUser user,Customer customer){
+        user.setRole(new ArrayList<KnRole>());
+        if(!Strings.isNullOrEmpty(user.getPlainPassword())){
+            entryptPassword(user);
+        }
+        KnUser result=userDao.save(user);
+        customer.setId(result.getId());
+        customerDao.save(customer);
+    }
+    private void entryptPassword(KnUser user){
+        byte[] hashPassword=Digests.sha1(user.getPlainPassword().getBytes(),Encodes.decodeHex(user.getSalt()),ResourceService.HASH_INTERATIONS);
+        user.setPassword(Encodes.encodeHex(hashPassword));
     }
 }

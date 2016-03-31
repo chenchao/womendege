@@ -83,7 +83,7 @@ public class KnUser extends AuditEntity{
     public void setName(String name){
         this.name=name;
     }
-    @Email @NotBlank @Column(length=100)
+    @Email @Column(length=100)
     public String getEmail(){
         return email;
     }

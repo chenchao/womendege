@@ -180,6 +180,7 @@
                                 </td>
                             </tr>
                             </#list>
+                            <span id="spanFile"></span>
                             </tbody>
                         </table>
                     </div>
@@ -308,9 +309,16 @@
         function getYmd(date){
             return date.substr(0,10);
         }
-        /**
+
+/**
  * 上传附件
  */
+ var currentImgBtn;
+ $('.fileupload').click(function(){
+    currentImgBtn=$(this).attr("positionId");
+    alert(currentImgBtn);
+    $('.fileupload').attr("disabled","disabled");
+ });
 $('.fileupload').fileupload({
     autoUpload:true,
     method:'POST',
@@ -325,14 +333,18 @@ $('.fileupload').fileupload({
         spanFile.append(attachmentExt);
         spanFile.append(attachmentAddress);
         spanFile.append(attachmentUuid);
-        alert(JSON.stringify(a));
-        showAttachment(a['ext'],a['url'],a['uuid'],$(this).attr("positionId"));
+        showAttachment(a['ext'],a['url'],a['uuid']);
+        alert(1);
+        $('.fileupload').removeAttr("disabled");
+    },error:function(){
+    alert(0);
+        $('.fileupload').removeAttr("disabled");
     }
 });
 /**
  * 预览附件
  */
-function showAttachment(ext,address,uuid,positionId){
+function showAttachment(ext,address,uuid){
     var spanHtml='<span id="span'+uuid+'">';
     ext=ext.toLowerCase();
     if(ext=="gif"||ext=="jpeg"||ext=="jpg"||ext=="png"){
@@ -347,7 +359,8 @@ function showAttachment(ext,address,uuid,positionId){
     spanHtml+='&nbsp;&nbsp;<a href="javascript:void(0)" onclick="deleteAttachment(\''+uuid+'\')">［删除］</a>';
 </#if>
     spanHtml+='</span>&nbsp;&nbsp;';
-    $('#spanShow_'+positionId).append(spanHtml);
+    alert(currentImgBtn);
+    $('#spanShow_'+currentImgBtn).append(spanHtml);
 }
 
 /**

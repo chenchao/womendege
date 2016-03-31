@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by admin on 2015/6/2.
  */
 @RestController
-@RequestMapping("/api/v1/activity")
+@RequestMapping("/api/activity")
 public class ActivityRest{
     @Autowired
     private ActivityService activityService;
@@ -38,15 +38,18 @@ public class ActivityRest{
     @ResponseBody @RequestMapping(value="/activities", method={RequestMethod.GET})
     public DetailDTO<ActivityDto> getActivityList(@RequestParam(value="activityCode") String activityCode,@RequestParam(value="positionCode") String positionCode){
         ActivityPosition activityPosition=activityService.getActivityPosition(activityCode,positionCode);
-        ActivityDto activityDto=new ActivityDto();
-        activityDto.setName(activityPosition.getActivity().getName());
-        activityDto.setActivityCode(activityPosition.getActivity().getActivityCode());
-        activityDto.setContent(activityPosition.getActivity().getContent());
-        activityDto.setDiscount(activityPosition.getActivity().getDiscount());
-        activityDto.setEndTime(activityPosition.getActivity().getEndTimeStr());
-        activityDto.setStartTime(activityPosition.getActivity().getStartTimeStr());
-        activityDto.setImgPath(activityPosition.getImgPath());
-        activityDto.setPri(activityPosition.getActivity().getPri());
+        ActivityDto activityDto=null;
+        if(activityPosition!=null){
+            activityDto=new ActivityDto();
+            activityDto.setName(activityPosition.getActivity().getName());
+            activityDto.setActivityCode(activityPosition.getActivity().getActivityCode());
+            activityDto.setContent(activityPosition.getActivity().getContent());
+            activityDto.setDiscount(activityPosition.getActivity().getDiscount());
+            activityDto.setEndTime(activityPosition.getActivity().getEndTimeStr());
+            activityDto.setStartTime(activityPosition.getActivity().getStartTimeStr());
+            activityDto.setImgPath(activityPosition.getImgPath());
+            activityDto.setPri(activityPosition.getActivity().getPri());
+        }
         return new DetailDTO<>(true,activityDto);
     }
 

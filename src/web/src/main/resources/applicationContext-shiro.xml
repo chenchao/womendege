@@ -44,6 +44,8 @@
                 /services/** = anon
                 /api/login = anon
                 /qrcode/** = anon
+                /api/customer/**=anon
+                /api/activity/**=anon
                 /login = authc
                 /logout = logout
                 /** = user

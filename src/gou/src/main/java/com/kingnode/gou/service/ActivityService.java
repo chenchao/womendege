@@ -54,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
         activityDao.save(activity);
     }
     public Page<ActivityProductView> findActivityProducts(final String activityCode,int pageNumber,int pageSize){
-        PageRequest pageRequest=new PageRequest(pageNumber,pageSize,new Sort(Sort.Direction.DESC,"id"));
+        PageRequest pageRequest=new PageRequest(pageNumber,pageSize,new Sort(Sort.Direction.DESC,"productCode"));
         Specification<ActivityProductView> spec=new Specification<ActivityProductView>(){
             @Override public Predicate toPredicate(Root<ActivityProductView> root,CriteriaQuery<?> cq,CriteriaBuilder cb){
                 List<Predicate> predicates=Lists.newArrayList();

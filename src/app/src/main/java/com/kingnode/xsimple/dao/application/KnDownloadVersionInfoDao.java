@@ -32,4 +32,7 @@ public interface KnDownloadVersionInfoDao extends PagingAndSortingRepository<KnD
      */
     @Query("select u from KnDownloadVersionInfo u where phoneNum=:phone_Num and likeStatus =:codeNum order by createTime desc ")
     List<KnDownloadVersionInfo> findListByPhone(@Param("phone_Num") String phone_Num,@Param("codeNum") Setting.LikeStatusType codeNum);
+
+    @Query("select u from KnDownloadVersionInfo u where phoneNum=:phone_Num and likeStatus ='codeNum' and codeNum=:codeNum  order by createTime desc ")
+    List<KnDownloadVersionInfo> findCode(@Param("phone_Num") String phone_Num,@Param("codeNum") String codeNum);
 }

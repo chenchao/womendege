@@ -28,6 +28,7 @@ public class Customer extends EmployeeAuditEntity implements java.io.Serializabl
     private int integral;//积分
     private Identity identity;
     private RegisteredModel registeredModel;
+
     @Id public Long getId(){
         return id;
     }

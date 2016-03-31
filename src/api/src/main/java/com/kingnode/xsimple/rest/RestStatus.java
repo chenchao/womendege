@@ -15,6 +15,11 @@ public class RestStatus{
         this.errorCode="";
         this.errorMessage="";
     }
+    public RestStatus(Boolean status,String errorCode,String errorMessage){
+        this.status=status;
+        this.errorCode=errorCode;
+        this.errorMessage=errorMessage;
+    }
     public Boolean getStatus(){
         return status;
     }
