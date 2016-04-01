@@ -6,26 +6,26 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 /**
  * 活动表
  *
  * @author
  */
 @Entity @Table(name="activity_product_view") public class ActivityProductView implements Serializable{
-    @Id private ActivityProduct apId;
+    @Id private ActivityProductId apId;
     private String productCode;
     private String productName;
     private String productImg;
     private BigDecimal price;
-    private BigDecimal salePrice;
     private String unit;    //单位
     private Double discount;   //折扣
     private String activityCode;
     private Activity.ActivityState state;
-    public ActivityProduct getApId(){
+    public ActivityProductId getApId(){
         return apId;
     }
-    public void setApId(ActivityProduct apId){
+    public void setApId(ActivityProductId apId){
         this.apId=apId;
     }
     public String getProductCode(){
@@ -64,11 +64,9 @@ import javax.persistence.Table;
     public void setPrice(BigDecimal price){
         this.price=price;
     }
+    @Transient
     public BigDecimal getSalePrice(){
-        return salePrice;
-    }
-    public void setSalePrice(BigDecimal salePrice){
-        this.salePrice=salePrice;
+        return price.multiply(BigDecimal.valueOf(discount));
     }
     public Double getDiscount(){
         return discount;

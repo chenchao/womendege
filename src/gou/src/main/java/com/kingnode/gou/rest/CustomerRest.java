@@ -30,11 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
     @Autowired private CustomerService customerService;
     @Autowired private KnDownloadVersionInfoDao knDownloadVersionInfoDao;
     @Autowired private ResourceService resourceService;
-    /**
-     * 获取活动商品
-     *
-     * @return
-     */
+
     @ResponseBody @RequestMapping(value="/addresses", method={RequestMethod.GET}) public ListDTO<Address> getAddresses(){
         List<Address> list=customerService.getAddresses(Users.id());
         return new ListDTO<>(true,list);
@@ -58,8 +54,8 @@ import org.springframework.web.bind.annotation.RestController;
         return new RestStatus(true);
     }
     @ResponseBody @RequestMapping(value="/info", method={RequestMethod.POST})
-    public RestStatus saveInfo(@RequestParam(value="babyBirthday") String babyBirthday,@RequestParam(value="babySex") String babySex,@RequestParam(value="nickName") String nickName){
-        customerService.updateInfo(Users.id(),babyBirthday,babySex,nickName);
+    public RestStatus saveInfo(@RequestParam(value="babyBirthday") String babyBirthday,@RequestParam(value="babySex") String babySex,@RequestParam(value="sex") String sex,@RequestParam(value="nickName") String nickName,@RequestParam(value="imageAddress") String imageAddress){
+        customerService.updateInfo(Users.id(),babyBirthday,babySex,sex,nickName,imageAddress);
         return new RestStatus(true);
     }
     @ResponseBody @RequestMapping(value="/collection", method={RequestMethod.POST}) public RestStatus saveCollection(@RequestParam(value="productId") long productId){
@@ -70,6 +66,24 @@ import org.springframework.web.bind.annotation.RestController;
     public ListDTO<Collection> getCollectionProducts(@RequestParam(value="p", defaultValue="0") Integer pageNo,@RequestParam(value="s", defaultValue="10") Integer pageSize){
         List<Collection> list=customerService.getCollections(Users.id(),pageNo,pageSize);
         return new ListDTO<>(true,list);
+    }
+    @ResponseBody @RequestMapping(value="/collection/delete", method={RequestMethod.POST}) public RestStatus deleteCollection(@RequestParam(value="id") long id){
+        try{
+            customerService.deleteCollection(id);
+        }catch(Exception e){
+            e.printStackTrace();
+            return new RestStatus(false,"500","操作失败");
+        }
+        return new RestStatus(true);
+    }
+    @ResponseBody @RequestMapping(value="/collection/clear", method={RequestMethod.POST}) public RestStatus clearCollection(){
+        try{
+            customerService.clearCollection(Users.id());
+        }catch(Exception e){
+            e.printStackTrace();
+            return new RestStatus(false,"500","操作失败");
+        }
+        return new RestStatus(true);
     }
     @ResponseBody @RequestMapping(value="/footprint/products", method={RequestMethod.GET})
     public ListDTO<Footprint> getFootprintProducts(@RequestParam(value="p", defaultValue="0") Integer pageNo,@RequestParam(value="s", defaultValue="10") Integer pageSize){

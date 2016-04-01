@@ -52,11 +52,13 @@ import org.springframework.transaction.annotation.Transactional;
         }
         return null;
     }
-    public void updateInfo(long customerId,String babyBirthday,String babySex,String nickName){
+    public void updateInfo(long customerId,String babyBirthday,String babySex,String sex,String nickName,String imageAddress){
         Customer customer=customerDao.findOne(customerId);
         customer.setBabyBirthday(DateUtil.getDate(babyBirthday));
         customer.setBabySex(Customer.Gender.valueOf(babySex));
+        customer.setSex(Customer.Gender.valueOf(sex));
         customer.setNickName(nickName);
+        customer.setImageAddress(imageAddress);
         customerDao.save(customer);
     }
     public List<Address> getAddresses(long customerId){
@@ -76,6 +78,13 @@ import org.springframework.transaction.annotation.Transactional;
     }
     public void deleteAddress(long id){
         addressDao.delete(id);
+    }
+    public void deleteCollection(long id){
+        collectionDao.delete(id);
+    }
+    public void clearCollection(long customerId){
+        List<Collection>collections=collectionDao.findCollections(customerId);
+        collectionDao.delete(collections);
     }
     public void saveCollection(long productId,long customerId){
         Collection collection=new Collection(customerId,productId);

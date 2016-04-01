@@ -68,24 +68,7 @@ import com.kingnode.xsimple.util.dete.DateUtil;
         this.state=state;
     }
     public enum ActivityState{
-        ready("未开始"),running("进行中"),finish("已完成"),closed("已关闭"),delete("已废弃");
-        private final String state;
-        ActivityState(final String state){
-            this.state=state;
-        }
-        public String getStateName(){
-            return state;
-        }
-    }
-    public enum Position{
-        top("300:600"),left("400:800"),center("400:800");
-        private final String position;
-        Position(final String position){
-            this.position=position;
-        }
-        public String getPosition(){
-            return position;
-        }
+        ready,running,finish,closed,delete
     }
     @Transient
     public String getEndTimeStr(){
