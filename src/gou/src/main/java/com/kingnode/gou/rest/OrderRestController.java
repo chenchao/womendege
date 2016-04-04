@@ -233,7 +233,7 @@ public class OrderRestController{
 
     //增加购物车
     @RequestMapping(value="/order/add/shoppcat", method={RequestMethod.POST})
-    public DetailDTO addShoppcat(@RequestParam(value="productId") Long productId,@RequestParam(value="count") int count){
+    public DetailDTO addShoppcat(@RequestParam(value="productId") Long productId,@RequestParam(value="count") String count){
         if(Users.id() == null || Users.id()==0l){
             logger.error("接口：/order/submit，请先登录");
             return null;
@@ -241,7 +241,7 @@ public class OrderRestController{
 
         int i = 0;
         try{
-            i = orderService.SaveShoppcat(productId,count);
+            i = orderService.SaveShoppcat(productId,Integer.parseInt(count));
         }catch(Exception e){
             logger.info("e:{}",e);
         }
