@@ -1,6 +1,7 @@
 package com.kingnode.gou.controller;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,10 +15,18 @@ import com.kingnode.gou.entity.ActivityPosition;
 import com.kingnode.gou.entity.ActivityProduct;
 import com.kingnode.gou.entity.ActivityProductView;
 import com.kingnode.gou.entity.Collection;
+import com.kingnode.gou.entity.Product;
+import com.kingnode.gou.entity.ProductBrand;
+import com.kingnode.gou.entity.ProductClass;
 import com.kingnode.gou.service.ActivityService;
+import com.kingnode.gou.service.ProductBrandService;
+import com.kingnode.gou.service.ProductCatalogService;
+import com.kingnode.gou.service.ProductClassService;
 import com.kingnode.xsimple.Setting;
 import com.kingnode.xsimple.api.common.DataTable;
 import com.kingnode.xsimple.rest.DetailDTO;
+import com.kingnode.xsimple.rest.RestStatus;
+import com.kingnode.xsimple.util.dete.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +44,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 /**
  * 活动管理
  *
- * @author chirs@zhoujin.com (Chirs Chou)
  */
 @Controller @RequestMapping(value="/activity") public class ActivityController{
     private static Logger log=LoggerFactory.getLogger(ActivityController.class);
     @Autowired private ActivityService activityService;
+    @Autowired private ProductBrandService brandService;
+    @Autowired private ProductClassService classService;
     @RequestMapping(method=RequestMethod.GET) public String home(Model model){
         return "/activity/activityList";
     }
@@ -47,21 +57,51 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
         Map<String,Object> searchParams=Servlets.getParametersStartingWith(request,"search_");
         return activityService.PageActivities(searchParams,dt);
     }
-    @RequestMapping(value="activityProductList/{activityId}", method=RequestMethod.POST) @ResponseBody public DataTable<ActivityProductView> activityProductList(@PathVariable("activityId") Long activityId,DataTable<ActivityProductView> dt,ServletRequest request){
+    @RequestMapping(value="activityProductList/{activityId}", method=RequestMethod.POST) @ResponseBody public DataTable<ActivityProduct> activityProductList(@PathVariable("activityId") Long activityId,DataTable<ActivityProduct> dt){
+        DataTable dataTable=activityService.PageActivityProducts(activityId,dt);
+        if(dt.getAaData()!=null){
+            for(ActivityProduct activityProduct:dt.getAaData()){
+                ProductBrand brand=brandService.readProductBrandByCode(activityProduct.getProduct().getProductBrand());
+                activityProduct.getProduct().setBrandName(brand!=null?brand.getBrandName():"");
+                ProductClass productClass=classService.readProductClassByCode(activityProduct.getProduct().getProductClass());
+                activityProduct.getProduct().setFullClassName(classService.createParentName(productClass));
+            }
+        }
+        return dataTable;
+    }
+    @RequestMapping(value="products",method=RequestMethod.POST) @ResponseBody public DataTable<Product> list(DataTable<Product> dt,ServletRequest request,@RequestParam(value="activityId")Long activityId){
         Map<String,Object> searchParams=Servlets.getParametersStartingWith(request,"search_");
-        return activityService.PageActivityProducts(activityId,searchParams,dt);
+        dt=activityService.pageProduct(dt,searchParams,activityId);
+        if(dt!=null && dt.getAaData()!=null){
+            for(Product product:dt.getAaData()){
+                ProductBrand brand=brandService.readProductBrandByCode(product.getProductBrand());
+                product.setBrandName(brand!=null?brand.getBrandName():"");
+                ProductClass productClass=classService.readProductClassByCode(product.getProductClass());
+                product.setFullClassName(classService.createParentName(productClass));
+            }
+        }
+        return dt;
     }
-    @RequestMapping(value="deleteActivityProduct", method=RequestMethod.POST) public String deleteActivityProduct(@RequestParam(value="activityId") Long activityId,@RequestParam(value="activityProductIds") List<Long> activityProductIds,RedirectAttributes redirectAttributes){
-        activityService.deleteActivityProduct(activityProductIds);
-        redirectAttributes.addFlashAttribute("message","操作成功");
-        return "redirect:/activity/detail/"+activityId;
+    @ResponseBody @RequestMapping(value="deleteActivityProduct", method=RequestMethod.POST) public RestStatus deleteActivityProduct(@RequestParam(value="activityProductIds") String[] activityProductIds){
+        try{
+            activityService.deleteActivityProduct(activityProductIds);
+        }catch(Exception e){
+            e.printStackTrace();
+            return new RestStatus(false);
+        }
+        return new RestStatus(true);
     }
-    @RequestMapping(value="saveActivityProduct", method=RequestMethod.POST) public String saveActivityProduct(@RequestParam(value="activityId") Long activityId,@RequestParam(value="activityProductIds") List<Long> activityProductIds,RedirectAttributes redirectAttributes){
-        activityService.saveActivityProduct(activityId,activityProductIds);
-        redirectAttributes.addFlashAttribute("message","操作成功");
-        return "redirect:/activity/detail/"+activityId;
+    @ResponseBody @RequestMapping(value="saveActivityProduct", method=RequestMethod.POST) public RestStatus saveActivityProduct(@RequestParam(value="activityId") Long activityId,@RequestParam(value="activityProductIds") List<Long> activityProductIds,RedirectAttributes redirectAttributes){
+        try{
+            activityService.saveActivityProduct(activityId,activityProductIds);
+        }catch(Exception e){
+            e.printStackTrace();
+            return new RestStatus(false);
+        }
+        return new RestStatus(true);
     }
     @RequestMapping(value="toAdd", method=RequestMethod.GET) public String add(Model model){
+        model.addAttribute("activityPositions",activityService.findAllActivityPositions());
         return "activity/activityForm";
     }
     @RequestMapping(value="detail/{id}", method=RequestMethod.GET) public String detail(@PathVariable("id") Long id,Model model){
@@ -74,12 +114,24 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
         model.addAttribute("activityPositions",activityService.findActivityPositions(id));
         return "activity/activityForm";
     }
-    @RequestMapping(value="save", method=RequestMethod.POST) public String save(Activity activity,@RequestParam(value="startTimeStr")String startTimeStr,@RequestParam(value="endTimeStr")String endTimeStr,RedirectAttributes redirectAttributes){
-        Activity a=activityService.saveActivity(activity);
+    @RequestMapping(value="save", method=RequestMethod.POST) public String save(Activity activity,@RequestParam(value="imgPaths")String[] imgPaths,@RequestParam(value="startTimeStr")String startTimeStr,@RequestParam(value="endTimeStr")String endTimeStr,RedirectAttributes redirectAttributes){
+        Map<String,Object> map=new HashMap<>();
+        for(String imgPath:imgPaths){
+            if(imgPath.indexOf("_")==-1){
+                continue;
+            }
+            String[] args=imgPath.split("_");
+            if(args.length==2){
+                map.put(args[0],args[1]);
+            }
+        }
+        activity.setStartTime(DateUtil.getDate(startTimeStr));
+        activity.setEndTime(DateUtil.getDate(endTimeStr));
+        Activity a=activityService.saveActivity(activity,map);
         redirectAttributes.addFlashAttribute("message","活动更新成功");
         return "redirect:/activity/update/"+a.getId();
     }
-    @RequestMapping(value="delete/{id}", method=RequestMethod.POST) public String delete(@PathVariable("id") Long id,RedirectAttributes redirectAttributes){
+    @RequestMapping(value="delete/{id}", method=RequestMethod.GET) public String delete(@PathVariable("id") Long id,RedirectAttributes redirectAttributes){
         activityService.deleteActivity(id);
         redirectAttributes.addFlashAttribute("message","操作成功");
         return "redirect:/activity";

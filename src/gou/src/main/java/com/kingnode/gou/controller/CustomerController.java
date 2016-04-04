@@ -49,6 +49,7 @@ public class CustomerController{
     }
     @RequestMapping(value="detail/{id}", method=RequestMethod.GET) public String detail(@PathVariable("id") Long id,Model model){
         model.addAttribute("customer",customerService.readCustomer(id));
+        model.addAttribute("addresses",customerService.getAddresses(id));
         return "customer/customerView";
     }
 }

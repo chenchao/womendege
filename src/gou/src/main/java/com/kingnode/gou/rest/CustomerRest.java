@@ -1,6 +1,9 @@
 package com.kingnode.gou.rest;
+import java.io.File;
 import java.util.List;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.kingnode.diva.security.utils.Digests;
 import com.kingnode.diva.utils.Encodes;
 import com.kingnode.gou.entity.Address;
@@ -18,15 +21,24 @@ import com.kingnode.xsimple.rest.ListDTO;
 import com.kingnode.xsimple.rest.RestStatus;
 import com.kingnode.xsimple.service.system.ResourceService;
 import com.kingnode.xsimple.util.MSM.SMSUtil;
+import com.kingnode.xsimple.util.PathUtil;
 import com.kingnode.xsimple.util.Users;
+import com.kingnode.xsimple.util.file.FileUtil;
 import com.kingnode.xsimple.util.message.SendPhoneMsg;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 @RestController @RequestMapping("/api/customer") public class CustomerRest{
+    private static Logger logger=LoggerFactory.getLogger(CustomerRest.class);
     @Autowired private CustomerService customerService;
     @Autowired private KnDownloadVersionInfoDao knDownloadVersionInfoDao;
     @Autowired private ResourceService resourceService;
@@ -54,8 +66,17 @@ import org.springframework.web.bind.annotation.RestController;
         return new RestStatus(true);
     }
     @ResponseBody @RequestMapping(value="/info", method={RequestMethod.POST})
-    public RestStatus saveInfo(@RequestParam(value="babyBirthday") String babyBirthday,@RequestParam(value="babySex") String babySex,@RequestParam(value="sex") String sex,@RequestParam(value="nickName") String nickName,@RequestParam(value="imageAddress") String imageAddress){
-        customerService.updateInfo(Users.id(),babyBirthday,babySex,sex,nickName,imageAddress);
+    public RestStatus saveInfo(@RequestParam(value="babyBirthday") String babyBirthday,@RequestParam(value="babySex") String babySex,@RequestParam(value="sex",required=false) String sex,@RequestParam(value="nickName") String nickName,@RequestParam("imageFile") String imageFile){
+        String imagePath=PathUtil.getRootPath()+Setting.BASEADDRESS;
+        File savedir=new File(imagePath);
+        if(!savedir.exists()){
+            savedir.mkdirs();
+        }
+        String newImage=imageFile.replaceAll(" ","+");
+        long name=DateTime.now().getMillis();
+        FileUtil.getInstance().saveFileToDisk(newImage,imagePath+"/"+name+".jpg");
+        String path=Setting.BASEADDRESS+"/"+name+".jpg";
+        customerService.updateInfo(Users.id(),babyBirthday,babySex,sex,nickName,path);
         return new RestStatus(true);
     }
     @ResponseBody @RequestMapping(value="/collection", method={RequestMethod.POST}) public RestStatus saveCollection(@RequestParam(value="productId") long productId){
@@ -97,14 +118,14 @@ import org.springframework.web.bind.annotation.RestController;
             if(c!=null){
                 return new RestStatus(false,"400","手机号码已被注册");
             }
-            List<KnDownloadVersionInfo> list=knDownloadVersionInfoDao.findCode(loginName,authCode);
-            if(list.isEmpty()){
-                return new RestStatus(false,"400","验证码无效");
-            }
-            KnDownloadVersionInfo info=list.get(0);
-            if(info.getOutTime()<System.currentTimeMillis()){
-                return new RestStatus(false,"400","验证码已过期");
-            }
+//            List<KnDownloadVersionInfo> list=knDownloadVersionInfoDao.findCode(loginName,authCode);
+//            if(list.isEmpty()){
+//                return new RestStatus(false,"400","验证码无效");
+//            }
+//            KnDownloadVersionInfo info=list.get(0);
+//            if(info.getOutTime()<System.currentTimeMillis()){
+//                return new RestStatus(false,"400","验证码已过期");
+//            }
             KnUser user=new KnUser();
             user.setLoginName(loginName);
             user.setPassword(password);
@@ -160,5 +181,39 @@ import org.springframework.web.bind.annotation.RestController;
     }
     private int createAuthCode(){
         return 1+(int)(Math.random()*9999);
+    }
+
+    private String GetImageAddressByFile(MultipartFile file) throws Exception{
+        StringBuffer imageAddress=new StringBuffer();
+        try{
+            if(null!=file&&!file.isEmpty()){
+                throw new RuntimeException("文件不能为空");
+            }
+            WebApplicationContext webApplicationContext=ContextLoader.getCurrentWebApplicationContext();
+            String fileExt=file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")+1).toLowerCase();//扩展名
+            if(!validateSuffix(fileExt)){
+                throw new RuntimeException("格式错误");
+            }
+            if(!Strings.isNullOrEmpty(fileExt)){
+                Long currentTime=System.currentTimeMillis();
+                String filePath=Setting.BASEADDRESS+"/"+currentTime, backPath=filePath+"."+fileExt; //安装包存放路径前缀  没有后缀名
+                File localFile=new File(webApplicationContext.getServletContext().getRealPath(backPath));
+                if(!localFile.getParentFile().exists()){
+                    localFile.getParentFile().mkdirs();
+                }
+                file.transferTo(localFile);
+                imageAddress.append(backPath);
+            }
+        }catch(Exception e){
+            logger.info("上传图片文件存储的路径 错误信息：{}",e);
+        }
+        return imageAddress.toString();
+    }
+    private boolean validateSuffix(String suffix){
+        String[] suffixs=new String[]{"BMP","JPG","JPEG","PNG","GIF"};
+        if(Lists.newArrayList(suffixs).contains(suffix.toUpperCase())){
+            return true;
+        }
+        return false;
     }
 }

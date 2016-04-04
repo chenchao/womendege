@@ -43,14 +43,16 @@ public class SMSUtil {
      * @param codeNum  验证码
      * @return 短信发送状态,true表示发送成功,false表示发送失败
      */
-    public boolean sendAuthCode(String phone,String codeNum){
+    public void sendAuthCode(String phone,String codeNum)throws Exception{
         UegateSoap uegatesoap = new  UegateSoap();
         String msg=sendMsgContent.replace("${codeNum}",codeNum);
         String sendResult=uegatesoap.Submit(sendMsgAccount,sendMsgPwd, sendMsgID, msg, phone);
+        System.out.println("短信返回："+sendResult);
         if(sendResult!=null&&sendResult.startsWith("0")){
-            return true;
+            return;
         }
-        return false;
+        log.info("短信返回："+sendResult);
+        throw new Exception("短信发送失败");
     }
 
 }

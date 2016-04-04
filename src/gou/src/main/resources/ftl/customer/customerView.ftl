@@ -99,6 +99,18 @@
                                 </div>
                             </div>
                         </div>
+
+
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">积分</label>
+
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                ${customer.integral}
+                                </div>
+                            </div>
+                        </div>
                 </div>
                     <div class="form-actions fluid">
                         <div class="col-md-offset-5 col-md-6">

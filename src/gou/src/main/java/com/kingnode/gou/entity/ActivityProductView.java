@@ -21,7 +21,7 @@ import javax.persistence.Transient;
     private String unit;    //单位
     private Double discount;   //折扣
     private String activityCode;
-    private Activity.ActivityState state;
+    private String state;
     public ActivityProductId getApId(){
         return apId;
     }
@@ -74,11 +74,10 @@ import javax.persistence.Transient;
     public void setDiscount(Double discount){
         this.discount=discount;
     }
-    @Enumerated(EnumType.STRING)
-    public Activity.ActivityState getState(){
+    public String getState(){
         return state;
     }
-    public void setState(Activity.ActivityState state){
+    public void setState(String state){
         this.state=state;
     }
 }

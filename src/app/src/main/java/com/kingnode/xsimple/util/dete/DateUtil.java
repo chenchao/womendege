@@ -117,7 +117,7 @@ public class DateUtil{
         return resultDate;
     }
 
-    public static final String format="yyyy-MM-dd HH:mm:ss";
+    public static final String format="yyyy-MM-dd HH:mm";
 
     /**
      * 时间转换为Long类型

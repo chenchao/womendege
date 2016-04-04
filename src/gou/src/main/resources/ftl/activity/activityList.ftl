@@ -138,19 +138,25 @@
                         return data;
                     }},
                     {  "sTitle":"开始时间","mData":"startTimeStr","mRender":function(data,type,row){
-                        if(data == 'daifahuo'){
-                            return "待发货";
-                        }
+                        return data;
                     }},
                     { "sTitle":"结束时间","mData":"endTimeStr","mRender":function(data,type,row){
-                        return getYmd(changeDate(parseFloat(data)));
+                        return data;
                     }},
                     {  "sTitle":"活动状态","mData":"state","mRender":function(data,type,row){
-                        return data;
+                        if('ready'==data){
+                            return '未开始';
+                        }else if('running'==data){
+                            return '进行中';
+                        }else if('finish'==data){
+                            return '已完成';
+                        }else if('closed'==data){
+                            return '已关闭';
+                        }
                     }},
                     {  "sTitle":"操作","mData":"id","sDefaultContent":"","mRender":function(data,type,row){
                         var a='<a href="${rc.contextPath}/activity/update/'+data+'" class="update btn default btn-xs purple"  title="编辑" >编辑</a>'+
-                        '<a href="${rc.contextPath}/activity/delete/'+data+'" class="delete btn default btn-xs purple"  title="删除" >删除</a>'
+                        '<a href="javascript:void();" onclick="deleteActivity('+data+')" class="delete btn default btn-xs purple"  title="删除" >删除</a>'
                        return a;
                     }}
                 ]
@@ -197,6 +203,11 @@
                 topicSubmit(id);
             }
         }
+        function deleteActivity(id){
+            if(confirm("您确定要删除吗？")){
+                window.location.href="${rc.contextPath}/activity/delete/"+id;
+            }
+        }
 
         function topicSubmit(id){
             $.ajax({
@@ -211,11 +222,11 @@
                 }
             });
         }
-
-
-        function getYmd(date){
-            return date.substr(0,10);
+        function showProduct(){
+            empMembersGrid.getDataTable().fnDraw();
+            $('#emp_members_list_div').modal('show');
         }
+
     </script>
 </content>
 </html>

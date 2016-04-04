@@ -36,8 +36,8 @@ public class ActivityRest{
         return new ListDTO<>(true,page.getContent());
     }
     @ResponseBody @RequestMapping(value="/activities", method={RequestMethod.GET})
-    public DetailDTO<ActivityDto> getActivityList(@RequestParam(value="activityCode") String activityCode,@RequestParam(value="positionCode") String positionCode){
-        ActivityPosition activityPosition=activityService.getActivityPosition(activityCode,positionCode);
+    public DetailDTO<ActivityDto> getActivityList(@RequestParam(value="positionCode") String positionCode){
+        ActivityPosition activityPosition=activityService.getActivityPosition(positionCode);
         ActivityDto activityDto=null;
         if(activityPosition!=null){
             activityDto=new ActivityDto();
